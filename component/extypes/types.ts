@@ -16,23 +16,27 @@ export interface ResponseData {
 }
 
 export interface OrderBookNobitex {
+  ask: number[];
+  bid: number[];
+}
+
+export interface MarketDataNobitex {
+  lastUpdate: number;
+  lastTradePrice: string;
+  asks: number[][];
+  bids: number[][];
+}
+
+export interface ResponseDataNobitex {
+  [key: string]: MarketDataNobitex;
+}
+
+export interface SortedOrderBooks {
+  [key: string]: {
     ask: number[];
     bid: number[];
-  }
-  
-  export interface MarketDataNobitex {
-    lastUpdate: number;
-    lastTradePrice: string;
-    asks: number[][];
-    bids: number[][];
-  }
-  
-  export interface ResponseDataNobitex {
-    [key: string]: MarketDataNobitex;
-  }
-// interface ResponseData {
-//     data : CoinexOrderBookResponse
-// }
+  };
+}
 
 // interface ResponseDataData extends Partial<AxiosResponse> {
 //   data : ResponseData

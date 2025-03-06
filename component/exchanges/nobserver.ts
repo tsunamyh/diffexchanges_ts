@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import symbols from '../../symbols/symbols';
-import { OrderBookNobitex,ResponseDataNobitex } from '../extypes/types';
+import { OrderBookNobitex,ResponseDataNobitex, SortedOrderBooks } from '../extypes/types';
 
 const nobCoinex = symbols.nobCoin;
 
@@ -13,17 +13,17 @@ const nobInstance = axios.create({
 async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, OrderBookNobitex>> {
   // nobInstance.defaults.params = { symbol }
   const response: AxiosResponse<ResponseDataNobitex> = await nobInstance.get(`/orderbook/${symbol}`);
-  console.log("re", response.data);
+  // console.log("re", response.data);
   
-  const orderBooks = sortOrderBooks(response.data);
-  // console.log("nobOrderBooks:>", orderBooks);
-  return orderBooks;
+  const sortedOrderBooks = sortOrderBooks(response.data);
+  console.log("nobOrderBooks:>", sortedOrderBooks);
+  return sortedOrderBooks;
 }
 
-function sortOrderBooks(data: ResponseDataNobitex): Record<string, OrderBookNobitex> {
+function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooks {
   const ttrAsk = data["USDTIRT"].bids[0][0];
   const ttrBid = data["USDTIRT"].asks[0][0];
-  const orderBooks: Record<string, OrderBookNobitex> = {};
+  const sortedOrderBooks: SortedOrderBooks = {};
 
   nobCoinex.forEach(function (symbol) {
     if (!(data[symbol[0]]?.bids === undefined || data[symbol[0]]?.bids.length === 0)) {
@@ -48,7 +48,7 @@ function sortOrderBooks(data: ResponseDataNobitex): Record<string, OrderBookNobi
           ask[0] = ask[0] / 1000;
           bid[0] = bid[0] / 1000;
         }
-        orderBooks[symbol[0]] = {
+        sortedOrderBooks[symbol[0]] = {
           ask: [(ask[0] / ttrBid), ...ask],
           bid: [(bid[0] / ttrAsk), ...bid]
         };
@@ -56,7 +56,7 @@ function sortOrderBooks(data: ResponseDataNobitex): Record<string, OrderBookNobi
     }
   });
 
-  return orderBooks;
+  return sortedOrderBooks;
 }
 
 httpGetNobOrderBooks("all");  //test

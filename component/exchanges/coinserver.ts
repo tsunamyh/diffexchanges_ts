@@ -58,8 +58,8 @@ async function httpGetCoinexOrderBooks() {
       return httpGetCoinexOrderBook(symbol);
     });
 
-  const allOrderBooks = await Promise.allSettled(sortedCoinexOrderBooks);
-  console.log("allOrderBooks",allOrderBooks);
+  // const allOrderBooks = await Promise.allSettled(sortedCoinexOrderBooks);
+  // console.log("allOrderBooks",allOrderBooks);
     
   // sortedCoinexOrderBooks.forEach(async function (coinexob) {
   //   try {
@@ -73,7 +73,7 @@ async function httpGetCoinexOrderBooks() {
   // console.log("sortedCoinexOrderBooks:", sortedCoinexOrderBooks);
 }
 
-httpGetCoinexOrderBooks();
+// httpGetCoinexOrderBooks();
 
 export = {
   httpGetCoinexOrderBooks,
