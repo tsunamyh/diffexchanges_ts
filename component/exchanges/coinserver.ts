@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import symbols from "../../symbols/symbols";
-import { CoinexOrderBookResponse, OrderBook, ResponseData } from "../extypes/types";
+import { MarketDataCoinex, OrderBook, ResponseData } from "../extypes/types";
 
 const agent = new HttpsProxyAgent("http://127.0.0.1:10808");
 
@@ -11,7 +11,6 @@ const coinInstance = axios.create({
   baseURL: coinBaseUrl.toString(),
   httpsAgent: agent,
 });
-
 
 async function httpGetCoinexOrderBook(
   symbol: [string, string]
@@ -43,7 +42,7 @@ async function httpGetCoinexOrderBook(
   return coinexOrderBooks;
 }
 
-function sortCoinexOrderBooks(data: CoinexOrderBookResponse): {
+function sortCoinexOrderBooks(data: MarketDataCoinex): {
   [key: string]: OrderBook;
 } {
   const ask: number[] = data.depth.asks[0];
@@ -59,8 +58,8 @@ async function httpGetCoinexOrderBooks() {
       return httpGetCoinexOrderBook(symbol);
     });
 
-  // const allOrderBooks = await Promise.allSettled(sortedCoinexOrderBooks);
-  // console.log("allOrderBooks",allOrderBooks);
+  const allOrderBooks = await Promise.allSettled(sortedCoinexOrderBooks);
+  console.log("allOrderBooks",allOrderBooks);
     
   // sortedCoinexOrderBooks.forEach(async function (coinexob) {
   //   try {

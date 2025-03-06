@@ -3,7 +3,7 @@ export interface OrderBook {
   bid: number[];
 }
 
-export interface CoinexOrderBookResponse {
+export interface MarketDataCoinex {
   depth: {
     asks: number[][];
     bids: number[][];
@@ -12,9 +12,24 @@ export interface CoinexOrderBookResponse {
 }
 
 export interface ResponseData {
-  data: CoinexOrderBookResponse;
+  data: MarketDataCoinex;
 }
 
+export interface OrderBookNobitex {
+    ask: number[];
+    bid: number[];
+  }
+  
+  export interface MarketDataNobitex {
+    lastUpdate: number;
+    lastTradePrice: string;
+    asks: number[][];
+    bids: number[][];
+  }
+  
+  export interface ResponseDataNobitex {
+    [key: string]: MarketDataNobitex;
+  }
 // interface ResponseData {
 //     data : CoinexOrderBookResponse
 // }
