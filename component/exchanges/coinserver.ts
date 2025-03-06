@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import symbols from "../../symbols/symbols";
-import { MarketDataCoinex, OrderBook, PromiseSetteledValue, ResponseData, SortedOrderBooks } from "../extypes/types";
+import { MarketDataCoinex, OrderBook, ResponseData, SortedOrderBooks } from "../extypes/types";
 import { writeFile } from "fs/promises";
 
 const agent = new HttpsProxyAgent("http://127.0.0.1:10808");

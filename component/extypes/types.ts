@@ -15,9 +15,6 @@ export interface ResponseData {
   data: MarketDataCoinex;
 }
 
-export interface PromiseSetteledValue {
-  value : {[key: string]: MarketDataNobitex}
-}
 ///////////////////////////////////////
 export interface OrderBookNobitex {
   ask: number[];
