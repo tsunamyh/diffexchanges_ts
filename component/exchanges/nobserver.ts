@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import symbols from '../../symbols/symbols';
-import { OrderBookNobitex,ResponseDataNobitex, SortedOrderBooks } from '../extypes/types';
+import { OrderBookNobitex, ResponseDataNobitex, SortedOrderBooks } from '../extypes/types';
+import { writeFile } from 'node:fs';
 
 const nobCoinex = symbols.nobCoin;
 
@@ -14,9 +15,16 @@ async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, Orde
   // nobInstance.defaults.params = { symbol }
   const response: AxiosResponse<ResponseDataNobitex> = await nobInstance.get(`/orderbook/${symbol}`);
   // console.log("re", response.data);
-  
+
   const sortedOrderBooks = sortOrderBooks(response.data);
-  console.log("nobOrderBooks:>", sortedOrderBooks);
+  // console.log("nobOrderBooks:>", sortedOrderBooks);
+  writeFile("./component/exchanges/nobiorderbook.js", "module.exports=" + JSON.stringify(sortedOrderBooks, null, 2), function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("nobiorderbook.js Writed!!");
+    }
+  })
   return sortedOrderBooks;
 }
 
@@ -69,7 +77,7 @@ httpGetNobOrderBooks("all");  //test
 //   // console.log(promisesArray);
 //   const allOrderBooks = await Promise.allSettled(promisesArray);
 //   if (allOrderBooks[0].status === 'fulfilled') {
-//     console.log(allOrderBooks[0].value);
+//     console.log(allOrderBooks);
 //   } else {
 //     console.error('Failed to fetch order books:', allOrderBooks[0].reason);
 //   }

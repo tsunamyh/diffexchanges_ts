@@ -1,7 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import symbols from "../../symbols/symbols";
-import { MarketDataCoinex, OrderBook, ResponseData } from "../extypes/types";
+import { MarketDataCoinex, OrderBook, PromiseSetteledValue, ResponseData, SortedOrderBooks } from "../extypes/types";
+import { writeFile } from "fs/promises";
 
 const agent = new HttpsProxyAgent("http://127.0.0.1:10808");
 
@@ -53,14 +54,31 @@ function sortCoinexOrderBooks(data: MarketDataCoinex): {
 }
 
 async function httpGetCoinexOrderBooks() {
-  const sortedCoinexOrderBooks: Promise<{ [key: string]: OrderBook }>[] =
+  const sortedCoinexOrderBooksPromise: Promise<{ [key: string]: OrderBook }>[] =
     symbols.nobCoin.map(async function (symbol: [string, string]) {
       return httpGetCoinexOrderBook(symbol);
     });
 
-  // const allOrderBooks = await Promise.allSettled(sortedCoinexOrderBooks);
+  const sortedCoinexOrderBooksArray = await Promise.allSettled(sortedCoinexOrderBooksPromise);
+
+  // تبدیل اوردرهای تکی کوینکس شبیه به تایپ اوردربوک نوبیتکس
+  const sortedCoinexOrderBooks: SortedOrderBooks = {}
+  sortedCoinexOrderBooksArray.forEach(function (orderbook) {
+    if (orderbook.status == "fulfilled") {
+      Object.assign(sortedCoinexOrderBooks, orderbook.value);
+    } else {
+      console.error(`Failed to fetch order book for a symbol: ${orderbook.reason}`);
+    }
+  })
+
+  try {
+    await writeFile("./component/exchanges/coinexorderbook.js", "module.exports=" + JSON.stringify(sortedCoinexOrderBooksArray, null, 2));
+    console.log("sameNobBin.js Writed!!");
+  } catch (err) {
+    console.log(err);
+  }
   // console.log("allOrderBooks",allOrderBooks);
-    
+
   // sortedCoinexOrderBooks.forEach(async function (coinexob) {
   //   try {
   //     const ob = await coinexob
@@ -73,7 +91,7 @@ async function httpGetCoinexOrderBooks() {
   // console.log("sortedCoinexOrderBooks:", sortedCoinexOrderBooks);
 }
 
-// httpGetCoinexOrderBooks();
+httpGetCoinexOrderBooks();
 
 export = {
   httpGetCoinexOrderBooks,
