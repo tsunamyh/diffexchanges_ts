@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import symbols from '../../symbols/symbols';
 import { OrderBookNobitex,ResponseDataNobitex } from '../extypes/types';
 
-const nobCoin = symbols.nobCoin;
+const nobCoinex = symbols.nobCoin;
 
 const nobBaseUrl = "https://api.nobitex.ir/v2/";
 
@@ -25,7 +25,7 @@ function sortOrderBooks(data: ResponseDataNobitex): Record<string, OrderBookNobi
   const ttrBid = data["USDTIRT"].asks[0][0];
   const orderBooks: Record<string, OrderBookNobitex> = {};
 
-  nobCoin.forEach(function (symbol) {
+  nobCoinex.forEach(function (symbol) {
     if (!(data[symbol[0]]?.bids === undefined || data[symbol[0]]?.bids.length === 0)) {
       // console.log("data[symbol[0]].bids[0]",symbol[0],data[symbol[0]]?.bids[0]);
       // array exist or is not empty
