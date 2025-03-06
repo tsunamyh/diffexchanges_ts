@@ -72,7 +72,7 @@ async function httpGetCoinexOrderBooks() {
   })
 
   try {
-    await writeFile("./component/exchanges/coinexorderbook.js", "module.exports=" + JSON.stringify(sortedCoinexOrderBooksArray, null, 2));
+    await writeFile("./component/exchanges/coinexorderbook.js", "module.exports=" + JSON.stringify(sortedCoinexOrderBooks, null, 2));
     console.log("sameNobBin.js Writed!!");
   } catch (err) {
     console.log(err);
