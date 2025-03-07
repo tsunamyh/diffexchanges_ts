@@ -71,12 +71,12 @@ async function httpGetCoinexOrderBooks() {
     }
   })
 
-  try {
-    await writeFile("./component/exchanges/coinexorderbook.js", "module.exports=" + JSON.stringify(sortedCoinexOrderBooks, null, 2));
-    console.log("sameNobBin.js Writed!!");
-  } catch (err) {
-    console.log(err);
-  }
+  // try {
+  //   await writeFile("./component/exchanges/coinexorderbook.js", "module.exports=" + JSON.stringify(sortedCoinexOrderBooks, null, 2));
+  //   console.log("sameNobBin.js Writed!!");
+  // } catch (err) {
+  //   console.log(err);
+  // }
   // console.log("allOrderBooks",allOrderBooks);
 
   // sortedCoinexOrderBooks.forEach(async function (coinexob) {
@@ -89,10 +89,11 @@ async function httpGetCoinexOrderBooks() {
   // });
 
   // console.log("sortedCoinexOrderBooks:", sortedCoinexOrderBooks);
+  return sortedCoinexOrderBooks
 }
 
-httpGetCoinexOrderBooks();
-
-export = {
-  httpGetCoinexOrderBooks,
-};
+// httpGetCoinexOrderBooks();
+export default httpGetCoinexOrderBooks
+// module.exports = {
+//   httpGetCoinexOrderBooks,
+// };

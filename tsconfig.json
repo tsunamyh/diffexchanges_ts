@@ -20,5 +20,9 @@
     "esModuleInterop": true,  
     "allowJs": true,
     "checkJs": true
-  }
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

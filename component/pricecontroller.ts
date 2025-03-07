@@ -1,8 +1,10 @@
 import { EventEmitter } from "stream";
 import symbols from "../symbols/symbols";
+import httpGetCoinexOrderBooks  from "./exchanges/coinserver";
+import httpGetNobOrderBooks from "./exchanges/nobserver";
+// import { httpGetNobOrderBooks } from "./exchanges/nobserver";
 
-const { httpGetNobOrderBooks } = require("./exchanges/nobserver");
-const { httpGetCoinOrderBooks } = require("./exchanges/coinserver");
+
 
 const eventEmmiter = new EventEmitter();
 intervalFunc();
@@ -32,7 +34,7 @@ async function intervalFunc() {
 }
 
 async function getAllOrderBooks() {
-  const coinOrderBooksPromise = httpGetCoinOrderBooks();
+  const coinOrderBooksPromise = httpGetCoinexOrderBooks();
   const nobOrderBooksPromise = httpGetNobOrderBooks("all");
   // const ramzOrderBooksPromise = symbols.ramzCoin.map(function (symbol) {
   //   return httpGetRamzOrderBooks(symbol);

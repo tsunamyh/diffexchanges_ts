@@ -67,7 +67,7 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooks {
   return sortedOrderBooks;
 }
 
-httpGetNobOrderBooks("all");  //test
+// httpGetNobOrderBooks("all");  //test
 // getAllOrderBooks();
 // // console.log("nobOrderBooks:",nobOrderBooks);
 // async function getAllOrderBooks(): Promise<any[]> {
@@ -83,7 +83,7 @@ httpGetNobOrderBooks("all");  //test
 //   }
 //   return allOrderBooks;
 // }
-
-module.exports = {
-  httpGetNobOrderBooks,
-};
+export default httpGetNobOrderBooks
+// exports = {
+//   httpGetNobOrderBooks,
+// };
