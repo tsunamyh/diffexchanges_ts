@@ -18,13 +18,17 @@ async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, Orde
 
   const sortedOrderBooks = sortOrderBooks(response.data);
   // console.log("nobOrderBooks:>", sortedOrderBooks);
-  writeFile("./component/exchanges/nobiorderbook.js", "module.exports=" + JSON.stringify(sortedOrderBooks, null, 2), function (err) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("nobiorderbook.js Writed!!");
-    }
-  })
+  // writeFile(
+  //   "./component/exchanges/nobiorderbook.js",
+  //   "module.exports=" + JSON.stringify(sortedOrderBooks, null, 2),
+  //   function (err) {
+  //     if (err) {
+  //       console.log(err);
+  //     } else {
+  //       console.log("nobiorderbook.js Writed!!");
+  //     }
+  //   }
+  // );
   return sortedOrderBooks;
 }
 
@@ -57,8 +61,8 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooks {
           bid[0] = bid[0] / 1000;
         }
         sortedOrderBooks[symbol[0]] = {
-          ask: [(ask[0] / ttrBid), ...ask],
-          bid: [(bid[0] / ttrAsk), ...bid]
+          ask: [ask[0] / ttrBid, ...ask],
+          bid: [bid[0] / ttrAsk, ...bid],
         };
       }
     }
@@ -83,7 +87,7 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooks {
 //   }
 //   return allOrderBooks;
 // }
-export default httpGetNobOrderBooks
+export { httpGetNobOrderBooks };
 // exports = {
 //   httpGetNobOrderBooks,
 // };

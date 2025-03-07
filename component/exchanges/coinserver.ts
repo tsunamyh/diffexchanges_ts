@@ -1,7 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import symbols from "../../symbols/symbols";
-import { MarketDataCoinex, OrderBook, ResponseData, SortedOrderBooks } from "../extypes/types";
+import {
+  MarketDataCoinex,
+  OrderBook,
+  ResponseData,
+  SortedOrderBooks,
+} from "../extypes/types";
 import { writeFile } from "fs/promises";
 
 const agent = new HttpsProxyAgent("http://127.0.0.1:10808");
@@ -16,13 +21,16 @@ const coinInstance = axios.create({
 async function httpGetCoinexOrderBook(
   symbol: [string, string]
 ): Promise<{ [key: string]: OrderBook }> {
-  const response: AxiosResponse<ResponseData> = await coinInstance.get("/spot/depth", {
-    params: {
-      market: symbol[1],
-      limit: 5,
-      interval: "0.01",
-    },
-  });
+  const response: AxiosResponse<ResponseData> = await coinInstance.get(
+    "/spot/depth",
+    {
+      params: {
+        market: symbol[1],
+        limit: 5,
+        interval: "0.01",
+      },
+    }
+  );
   // response.data.data = {
   // depth: {
   //   asks: [ [fee,vol], [fee,vol], [fee,vol], [fee,vol], [fee,vol] ],
@@ -59,17 +67,21 @@ async function httpGetCoinexOrderBooks() {
       return httpGetCoinexOrderBook(symbol);
     });
 
-  const sortedCoinexOrderBooksArray = await Promise.allSettled(sortedCoinexOrderBooksPromise);
+  const sortedCoinexOrderBooksArray = await Promise.allSettled(
+    sortedCoinexOrderBooksPromise
+  );
 
   // تبدیل اوردرهای تکی کوینکس شبیه به تایپ اوردربوک نوبیتکس
-  const sortedCoinexOrderBooks: SortedOrderBooks = {}
+  const sortedCoinexOrderBooks: SortedOrderBooks = {};
   sortedCoinexOrderBooksArray.forEach(function (orderbook) {
     if (orderbook.status == "fulfilled") {
       Object.assign(sortedCoinexOrderBooks, orderbook.value);
     } else {
-      console.error(`Failed to fetch order book for a symbol: ${orderbook.reason}`);
+      console.error(
+        `Failed to fetch order book for a symbol: ${orderbook.reason}`
+      );
     }
-  })
+  });
 
   // try {
   //   await writeFile("./component/exchanges/coinexorderbook.js", "module.exports=" + JSON.stringify(sortedCoinexOrderBooks, null, 2));
@@ -89,11 +101,11 @@ async function httpGetCoinexOrderBooks() {
   // });
 
   // console.log("sortedCoinexOrderBooks:", sortedCoinexOrderBooks);
-  return sortedCoinexOrderBooks
+  return sortedCoinexOrderBooks;
 }
 
 // httpGetCoinexOrderBooks();
-export default httpGetCoinexOrderBooks
+export { httpGetCoinexOrderBooks };
 // module.exports = {
 //   httpGetCoinexOrderBooks,
 // };
