@@ -1,7 +1,7 @@
 import { WebSocketServer, WebSocket } from "ws";
 import http, { IncomingMessage, Server, ServerResponse } from "http";
 import { app } from "./app";
-import { eventEmmiter, intervalFunc } from "./component/priceController";
+import { eventEmmiter, intervalFunc } from "./component/pricecontroller";
 
 const server: Server = http.createServer(app);
 
