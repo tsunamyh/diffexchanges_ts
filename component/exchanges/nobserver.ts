@@ -8,7 +8,7 @@ console.log("process.env.NOBTOKEN : ",nobToken);
 
 const nobCoinex = symbols.nobCoin;
 
-const nobBaseUrl = "https://api.nobitex.ir/v2/";
+const nobBaseUrl = "https://api.nobitex.ir/";
 
 const nobInstance = axios.create({
   baseURL: nobBaseUrl,
@@ -16,36 +16,36 @@ const nobInstance = axios.create({
 
 async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, OrderBookNobitex>> {
   // nobInstance.defaults.params = { symbol }
-  const response: AxiosResponse<ResponseDataNobitex> = await nobInstance.get(`/orderbook/${symbol}`);
+  const response: AxiosResponse<ResponseDataNobitex> = await nobInstance.get(`/v3/orderbook/${symbol}`);
   // console.log("re", response.data);
 
   const sortedOrderBooks = sortOrderBooks(response.data);
   // console.log("nobOrderBooks:>", sortedOrderBooks);
-  // writeFile(
-  //   "./component/exchanges/nobiorderbook.js",
-  //   "module.exports=" + JSON.stringify(sortedOrderBooks, null, 2),
-  //   function (err) {
-  //     if (err) {
-  //       console.log(err);
-  //     } else {
-  //       console.log("nobiorderbook.js Writed!!");
-  //     }
-  //   }
-  // );
+  writeFile(
+    "./component/exchanges/nobiorderbook.js",
+    "module.exports=" + JSON.stringify(sortedOrderBooks, null, 2),
+    function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("nobiorderbook.js Writed!!");
+      }
+    }
+  );
   return sortedOrderBooks;
 }
 
 function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooks {
-  const ttrAsk = data["USDTIRT"].bids[0][0];
-  const ttrBid = data["USDTIRT"].asks[0][0];
+  const ttrAsk = data["USDTIRT"].asks[0][0];
+  const ttrBid = data["USDTIRT"].bids[0][0];
   const sortedOrderBooks: SortedOrderBooks = {};
 
   nobCoinex.forEach(function (symbol) {
-    if (!(data[symbol[0]]?.bids === undefined || data[symbol[0]]?.bids.length === 0)) {
+    if (!(data[symbol[0]]?.asks === undefined || data[symbol[0]]?.bids.length === 0)) {
       // console.log("data[symbol[0]].bids[0]",symbol[0],data[symbol[0]]?.bids[0]);
       // array exist or is not empty
-      const ask = data[symbol[0]]?.bids[0];
-      const bid = data[symbol[0]]?.asks[0];
+      const ask = data[symbol[0]]?.asks[0];
+      const bid = data[symbol[0]]?.bids[0];
       if (ask && bid) {
         // [feeRiali,hajm,feettri]
         // Example::
