@@ -76,10 +76,6 @@ async function httpGetCoinexOrderBooks() {
   sortedCoinexOrderBooksArray.forEach(function (orderbook) {
     if (orderbook.status == "fulfilled") {
       Object.assign(sortedCoinexOrderBooks, orderbook.value);
-    } else {
-      console.error(
-        `Failed to fetch order book for a symbol: ${orderbook.reason}`
-      );
     }
   });
 
