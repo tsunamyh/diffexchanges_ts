@@ -19,12 +19,12 @@ function diffListener(rowsInfo: string): void {
   });
 }
 
-let getOrderInterval;
+// let getOrderInterval;
 
 server.on("upgrade", function (req: IncomingMessage, socket: any, head: Buffer) {
-  if (clients.size === 0) {
-    getOrderInterval = intervalFunc(); // This function will be executed once
-  }
+  // if (clients.size === 0) {
+  //   getOrderInterval = intervalFunc(); // This function will be executed once
+  // }
   wss.handleUpgrade(req, socket, head, async function (ws: WebSocket) {
     clients.add(ws);
     const clientSize = { size: clients.size };

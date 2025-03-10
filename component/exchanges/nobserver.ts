@@ -3,6 +3,9 @@ import symbols from '../../symbols/symbols';
 import { OrderBookNobitex, ResponseDataNobitex, SortedOrderBooks } from '../extypes/types';
 import { writeFile } from 'node:fs';
 
+const nobToken = process.env.NOBTOKEN
+console.log("process.env.NOBTOKEN : ",nobToken);
+
 const nobCoinex = symbols.nobCoin;
 
 const nobBaseUrl = "https://api.nobitex.ir/v2/";

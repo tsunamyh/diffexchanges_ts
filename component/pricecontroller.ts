@@ -5,6 +5,13 @@ import { httpGetNobOrderBooks } from "./exchanges/nobserver";
 import { OrderBook, RowInfo, AllOrderBooks, RowData } from "./types";
 
 const eventEmmiter = new EventEmitter();
+
+eventEmmiter.setMaxListeners(6);
+let intervalStatus = true
+
+let maxDiff = [
+  { percent: 0 }
+];
 intervalFunc();
 
 async function intervalFunc(): Promise<NodeJS.Timeout> {

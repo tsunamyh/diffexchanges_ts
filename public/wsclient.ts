@@ -1,4 +1,4 @@
-const HOST: string = location.href.replace(/^http/, "ws"); //'ws://localhost:8080/diff'
+const HOST: string = location.href.replace(/^http/, "ws"); //'ws://localhost:port/diff'
 const ws: WebSocket = new WebSocket(HOST);
 
 interface RowInfo {
