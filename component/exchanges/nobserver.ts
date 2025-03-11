@@ -64,19 +64,48 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
           bid[0] = bid[0] / 1000;
         }
         sortedOrderBooks[symbol[0]] = {
-          ask: [parseFloat((ask[0] / ttrBid).toFixed(2)).toString(), ask[0].toString(), ask[1].toString()],
-          bid: [parseFloat((bid[0] / ttrAsk).toFixed(2)).toString(), bid[0].toString(), bid[1].toString()],
+          ask: [formatToSixDigitsMath(ask[0] / ttrBid), ask[0].toString(), ask[1].toString()],
+          bid: [formatToSixDigitsMath(bid[0] / ttrAsk), bid[0].toString(), bid[1].toString()],
         };
-        // sortedOrderBooks[symbol[0]] = {
-        //   ask: [parseFloat((ask[0] / ttrBid).toFixed(2)), ask[0], ask[1]],
-        //   bid: [parseFloat((bid[0] / ttrAsk).toFixed(2)), bid[0], bid[1]],
-        // };
       }
     }
   });
 
   return sortedOrderBooks;
 }
+
+// function formatToSixDigits(value: number): string {
+//   const [integerPart, decimalPart = ""] = value.toString().split(".");
+//   if (!decimalPart) {
+//     return integerPart;
+//   }
+//   const totalLength = integerPart.length + decimalPart.length;
+//   if (totalLength <= 6) {
+//     return value.toString();
+//   }
+//   if (integerPart.length >= 6) {
+//     return integerPart.slice(0, 6);
+//   }
+//   const allowedDecimalLength = 6 - integerPart.length;
+//   const formattedDecimal = decimalPart.slice(0, allowedDecimalLength);
+//   return `${integerPart}.${formattedDecimal}`;
+// }
+
+function formatToSixDigitsMath(value: number): string {
+  if (Number.isInteger(value)) {
+    return value.toString();
+  }
+  if (value >= 100000) {
+    return Math.floor(value).toString().slice(0, 6);
+  }
+  const factor = Math.pow(10, 6 - Math.floor(Math.log10(value)) - 1);
+  return (Math.floor(value * factor) / factor).toString();
+}
+
+// Example usage:
+// console.log(formatToSixDigitsMath(8570002)); // Output: "8570002"
+// console.log(formatToSixDigitsMath(123.456789)); // Output: "123.456"
+// console.log(formatToSixDigitsMath(100001.34)); // Output: "100001"
 
 // httpGetNobOrderBooks("all");  //test
 // getAllOrderBooks();

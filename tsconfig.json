@@ -10,6 +10,9 @@
     "sourceMap": false,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "*": ["*"]
+    },
     "incremental": false,
     "skipLibCheck": true,
     "strictNullChecks": false,
