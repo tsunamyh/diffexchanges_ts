@@ -63,7 +63,8 @@ function printData(rowsInfo: RowsInfo): void {
     Object.keys(rowData).forEach(function (key) {
       const tCell = document.createElement("td");
       tRow.appendChild(tCell);
-
+      console.log("rowData[key]/::",rowData[key]);
+      
       tCell.innerText = rowData[key];
       if (statusbuy === key) {
         tCell.style.backgroundColor = "#8fff4e";

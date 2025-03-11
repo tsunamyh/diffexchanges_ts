@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 import symbols from '../../symbols/symbols';
-import { OrderBookNobitex, ResponseDataNobitex, SortedOrderBooks } from '../extypes/types';
+import { OrderBookNobitex, ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooks, SortedOrderBooksNobitex } from '../extypes/types';
 import { writeFile } from 'node:fs';
 
 const nobToken = process.env.NOBTOKEN
-console.log("process.env.NOBTOKEN : ",nobToken);
+console.log("process.env.NOBTOKEN : ", nobToken);
 
 const nobCoinex = symbols.nobCoin;
 
@@ -14,7 +14,7 @@ const nobInstance = axios.create({
   baseURL: nobBaseUrl,
 });
 
-async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, OrderBookNobitex>> {
+async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, SortedOrderBookNobitex>> {
   // nobInstance.defaults.params = { symbol }
   const response: AxiosResponse<ResponseDataNobitex> = await nobInstance.get(`/v3/orderbook/${symbol}`);
   // console.log("re", response.data);
@@ -35,10 +35,10 @@ async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, Orde
   return sortedOrderBooks;
 }
 
-function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooks {
+function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
   const ttrAsk = data["USDTIRT"].asks[0][0];
   const ttrBid = data["USDTIRT"].bids[0][0];
-  const sortedOrderBooks: SortedOrderBooks = {};
+  const sortedOrderBooks: SortedOrderBooksNobitex = {};
 
   nobCoinex.forEach(function (symbol) {
     if (!(data[symbol[0]]?.asks === undefined || data[symbol[0]]?.bids.length === 0)) {
@@ -64,9 +64,13 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooks {
           bid[0] = bid[0] / 1000;
         }
         sortedOrderBooks[symbol[0]] = {
-          ask: [ask[0] / ttrBid, ...ask],
-          bid: [bid[0] / ttrAsk, ...bid],
+          ask: [parseFloat((ask[0] / ttrBid).toFixed(2)).toString(), ask[0].toString(), ask[1].toString()],
+          bid: [parseFloat((bid[0] / ttrAsk).toFixed(2)).toString(), bid[0].toString(), bid[1].toString()],
         };
+        // sortedOrderBooks[symbol[0]] = {
+        //   ask: [parseFloat((ask[0] / ttrBid).toFixed(2)), ask[0], ask[1]],
+        //   bid: [parseFloat((bid[0] / ttrAsk).toFixed(2)), bid[0], bid[1]],
+        // };
       }
     }
   });

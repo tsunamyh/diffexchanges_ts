@@ -1,13 +1,13 @@
 export interface OrderBook {
-  ask: number[];
-  bid: number[];
+  ask: string[];
+  bid: string[];
 }
 
 export interface RowData {
   symbol: string;
   percent: number;
-  nob: [number, number];
-  coin: number;
+  nob: [string, string];
+  coin: string;
   value: number;
   description: string;
 }

@@ -21,6 +21,11 @@ export interface OrderBookNobitex {
   bid: number[];
 }
 
+export interface SortedOrderBookNobitex {
+  ask: string[];
+  bid: string[];
+}
+
 export interface MarketDataNobitex {
   lastUpdate: number;
   lastTradePrice: string;
@@ -34,11 +39,17 @@ export interface ResponseDataNobitex {
 
 export interface SortedOrderBooks {
   [key: string]: {
-    ask: number[];
-    bid: number[];
+    ask: string[];
+    bid: string[];
   };
 }
 
+export interface SortedOrderBooksNobitex {
+  [key: string]: {
+    ask: string[];
+    bid: string[];
+  };
+}
 // interface ResponseDataData extends Partial<AxiosResponse> {
 //   data : ResponseData
 // }

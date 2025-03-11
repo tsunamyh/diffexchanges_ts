@@ -56,10 +56,10 @@ function percentDiff(
       const rowData: RowData = {
         symbol: symbol[0],
         percent: calcPercentDiff(coinOrderSymbol.bid[0], nobOrderSymbol.ask[0]),
-        nob: [nobOrderSymbol.ask[0], nobOrderSymbol.ask[1] / 10],
+        nob: [nobOrderSymbol.ask[0], (+nobOrderSymbol.ask[1] / 10).toString()],
         coin: coinOrderSymbol.bid[0],
         value:
-          Math.floor((coinOrderSymbol.bid[0] - nobOrderSymbol.ask[0]) * 1000) /
+          Math.floor((Number(coinOrderSymbol.bid[0]) - Number(nobOrderSymbol.ask[0])) * 1000) /
           1000,
         description: maxBuyInNob(),
       };
@@ -70,12 +70,12 @@ function percentDiff(
     }
     if (coinAskIsSmallerNobBid()) {
       const rowData: RowData = {
-        symbol: symbol[1],
+        symbol: symbol[0],
         percent: calcPercentDiff(nobOrderSymbol.bid[0], coinOrderSymbol.ask[0]),
         nob: [nobOrderSymbol.bid[0], nobOrderSymbol.bid[1]],
         coin: coinOrderSymbol.ask[0],
         value:
-          Math.floor((nobOrderSymbol.bid[0] - coinOrderSymbol.ask[0]) * 1000) /
+          Math.floor((Number(nobOrderSymbol.bid[0]) - Number(coinOrderSymbol.ask[0])) * 1000) /
           1000,
         description: "",
       };
@@ -89,23 +89,23 @@ function percentDiff(
   return false;
 
   function nobAskIsSmallerCoinBid(): boolean {
-    return nobOrderSymbol.ask[0] < coinOrderSymbol.bid[0];
+    return +nobOrderSymbol.ask[0] < +coinOrderSymbol.bid[0];
   }
 
   function coinAskIsSmallerNobBid(): boolean {
-    return coinOrderSymbol.ask[0] < nobOrderSymbol.bid[0];
+    return +coinOrderSymbol.ask[0] < +nobOrderSymbol.bid[0];
   }
 
-  function calcPercentDiff(bid: number, ask: number): number {
-    const percent = ((bid - ask) / ask) * 100;
+  function calcPercentDiff(bid: string, ask: string): number {
+    const percent = ((Number(bid) - Number(ask)) / Number(ask)) * 100;
     return Math.floor(percent * 100) / 100;
   }
 
   function maxBuyInNob(): string {
-    const min = Math.min(nobOrderSymbol.ask[2], coinOrderSymbol.bid[1]);
-    const minTmn = Math.floor((min * nobOrderSymbol.ask[1]) / 10);
+    const min = Math.min(Number(nobOrderSymbol.ask[2]), Number(coinOrderSymbol.bid[1]));
+    const minTmn = Math.floor((min * Number(nobOrderSymbol.ask[1])) / 10);
     return `ارزی:${min} | تومانی:${minTmn}`;
   }
 }
 
-export { percentDiff, getAllOrderBooks, eventEmmiter, intervalFunc };
+export { getAllOrderBooks, eventEmmiter, intervalFunc };
