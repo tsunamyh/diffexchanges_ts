@@ -97,13 +97,13 @@ function formatToSixDigitsMath(value: number): string {
 async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount: number, price: number) {
   console.log("symbolnobtrade:", symbol, price);
   let srcCurrency = symbol.toLowerCase();
-  let destCurrency: "rls" | "usdt";
+  let dstCurrency: "rls" | "usdt";
   if (srcCurrency.endsWith("irt")) {
     srcCurrency = srcCurrency.slice(0, -3);
-    destCurrency = "rls";
+    dstCurrency = "rls";
   } else if (srcCurrency.endsWith("usdt")) {
     srcCurrency = srcCurrency.slice(0, -4);
-    destCurrency = "usdt";
+    dstCurrency = "usdt";
   }
 
   const axiosConfig = {
@@ -113,7 +113,7 @@ async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount:
       type,
       execution: "market",
       srcCurrency: srcCurrency,
-      dstCurrency: destCurrency,
+      dstCurrency: dstCurrency,
       amount,
       price,
     }
@@ -125,6 +125,40 @@ async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount:
   } catch (error) {
     console.log("nob naTradid:", error.message);
     throw error;
+  }
+}
+
+async function nobitexGetInOrder(symbol: NobCoinSymbol) {
+  let srcCurrency = symbol.toLowerCase(); 
+  let dstCurrency: "rls" | "usdt";
+  if (srcCurrency.endsWith("irt")) {
+    srcCurrency = srcCurrency.slice(0, -3);
+    dstCurrency = "rls";
+  } else if (srcCurrency.endsWith("usdt")) {
+    srcCurrency = srcCurrency.slice(0, -4);
+    dstCurrency = "usdt";
+  }
+  const axiosConfig = {
+    url: "/market/orders/list",
+    params: {
+      srcCurrency,
+      dstCurrency
+    }
+  }
+
+  try {
+    const reponse = await nobInstance(axiosConfig);
+    if (reponse.data.orders.length == 0) {
+      return 0
+    } else {
+      // console.log("inOrderNobitex " + symbol + JSON.stringify(reponse.data.orders));
+      //{type:buy, execution:Limit, tradeType:Spot, srcCurrency:Dogecoin, dstCurrency:...amount:...}
+      console.log("inOrderNobitex " + symbol + reponse.data.orders[0]["amount"]);
+      return false
+    }
+  } catch (error) {
+    console.log("🚀 ~ file: nobserver.js:90 ~ getInOrderNob ~ error:", error.message)
+    throw error
   }
 }
 // Example usage:
