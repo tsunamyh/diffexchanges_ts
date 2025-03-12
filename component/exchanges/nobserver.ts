@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import symbols from '../../symbols/symbols';
+import symbols, { NobCoinSymbol } from '../../symbols/symbols';
 import { OrderBookNobitex, ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooks, SortedOrderBooksNobitex } from '../extypes/types';
 import { writeFile } from 'node:fs';
 
@@ -12,6 +12,9 @@ const nobBaseUrl = "https://api.nobitex.ir/";
 
 const nobInstance = axios.create({
   baseURL: nobBaseUrl,
+  headers: {
+    Authorization: "Token " + nobToken
+  }
 });
 
 async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, SortedOrderBookNobitex>> {
@@ -20,18 +23,7 @@ async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, Sort
   // console.log("re", response.data);
 
   const sortedOrderBooks = sortOrderBooks(response.data);
-  // console.log("nobOrderBooks:>", sortedOrderBooks);
-  writeFile(
-    "./component/exchanges/nobiorderbook.js",
-    "module.exports=" + JSON.stringify(sortedOrderBooks, null, 2),
-    function (err) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("nobiorderbook.js Writed!!");
-      }
-    }
-  );
+  // writefileOrederbook(sortedOrderBooks)
   return sortedOrderBooks;
 }
 
@@ -102,6 +94,39 @@ function formatToSixDigitsMath(value: number): string {
   return (Math.floor(value * factor) / factor).toString();
 }
 
+async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount: number, price: number) {
+  console.log("symbolnobtrade:", symbol, price);
+  let srcCurrency = symbol.toLowerCase();
+  let destCurrency: "rls" | "usdt";
+  if (srcCurrency.endsWith("irt")) {
+    srcCurrency = srcCurrency.slice(0, -3);
+    destCurrency = "rls";
+  } else if (srcCurrency.endsWith("usdt")) {
+    srcCurrency = srcCurrency.slice(0, -4);
+    destCurrency = "usdt";
+  }
+
+  const axiosConfig = {
+    method: "post",
+    url: "/market/orders/add",
+    data: {
+      type,
+      execution: "market",
+      srcCurrency: srcCurrency,
+      dstCurrency: destCurrency,
+      amount,
+      price,
+    }
+  };
+  try {
+    const response = await nobInstance(axiosConfig);
+    console.log("nooooooooooooob:(", type, symbol, ")::", response.data);
+    return response.data;
+  } catch (error) {
+    console.log("nob naTradid:", error.message);
+    throw error;
+  }
+}
 // Example usage:
 // console.log(formatToSixDigitsMath(8570002)); // Output: "8570002"
 // console.log(formatToSixDigitsMath(123.456789)); // Output: "123.456"
@@ -127,3 +152,17 @@ export { httpGetNobOrderBooks };
 // exports = {
 //   httpGetNobOrderBooks,
 // };
+
+// function writefileOrederbook(sortedOrderBooks:any) {
+//     writeFile(
+//     "./component/exchanges/nobiorderbook.js",
+//     "module.exports=" + JSON.stringify(sortedOrderBooks, null, 2),
+//     function (err) {
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         console.log("nobiorderbook.js Writed!!");
+//       }
+//     }
+//   );
+// }

@@ -4,6 +4,8 @@ interface Coin {
   nobCoin: [string, string][];
 }
 
+type NobCoinSymbol = typeof symbols.nobCoin[number][0] | typeof symbols.nobCoin[number][1];
+
 const symbols: Coin = {
   ramzCoin: [
     [2, "BTCUSDT"],
@@ -274,3 +276,4 @@ const symbols: Coin = {
 };
 
 export default symbols;
+export type { NobCoinSymbol };
