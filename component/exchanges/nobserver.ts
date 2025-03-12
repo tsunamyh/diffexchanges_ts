@@ -148,6 +148,28 @@ async function nobitexGetInOrder(symbol: NobCoinSymbol) {
 
   try {
     const reponse = await nobInstance(axiosConfig);
+/*     Example= reponse.data : 
+    {
+      "status": "ok",
+      "orders": [
+          {
+              "type": "buy",
+              "execution": "Limit",
+              "tradeType": "Spot",
+              "srcCurrency": "Dogecoin",
+              "dstCurrency": "﷼",
+              "price": "143210",
+              "amount": "12",
+              "totalPrice": "1718520",
+              "totalOrderPrice": "1718520",
+              "matchedAmount": "0",
+              "unmatchedAmount": "12",
+              "clientOrderId": null,
+              "isMyOrder": false
+          }
+      ],
+      "hasNext": false
+  } */
     if (reponse.data.orders.length == 0) {
       return 0
     } else {
