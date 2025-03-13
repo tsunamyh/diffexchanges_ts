@@ -50,6 +50,51 @@ export interface SortedOrderBooksNobitex {
     bid: string[];
   };
 }
+
+export interface NobitexGetInOrderResponse {
+  status: string;
+  orders: {
+    type: string;
+    execution: string;
+    tradeType: string;
+    srcCurrency: string;
+    dstCurrency: string;
+    price: string;
+    amount: string;
+    totalPrice: string;
+    totalOrderPrice: string;
+    matchedAmount: string;
+    unmatchedAmount: string;
+    clientOrderId: string | null;
+    isMyOrder: boolean;
+  }[];
+  hasNext: boolean;
+}
+
+// if details = 2 => export interface NobitexGetInOrderResponse {
+//   status: string;
+//   orders: {
+//     id: number;
+//     type: string;
+//     execution: string;
+//     srcCurrency: string;
+//     dstCurrency: string;
+//     price: string;
+//     param1: string;
+//     amount: string;
+//     status: string;
+//     user: string;
+//     totalPrice: string;
+//     totalOrderPrice: string;
+//     matchedAmount: string;
+//     unmatchedAmount: string;
+//     partial: boolean;
+//     fee: string | number;
+//     created_at: string;
+//     market: string;
+//     averagePrice: string;
+//   }[];
+// }
 // interface ResponseDataData extends Partial<AxiosResponse> {
 //   data : ResponseData
 // }

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import symbols, { NobCoinSymbol } from '../../symbols/symbols';
-import { OrderBookNobitex, ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooks, SortedOrderBooksNobitex } from '../extypes/types';
+import { OrderBookNobitex, ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooks, SortedOrderBooksNobitex, NobitexGetInOrderResponse } from '../extypes/types';
 import { writeFile } from 'node:fs';
 
 const nobToken = process.env.NOBTOKEN
@@ -128,8 +128,8 @@ async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount:
   }
 }
 
-async function nobitexGetInOrder(symbol: NobCoinSymbol) {
-  let srcCurrency = symbol.toLowerCase(); 
+async function nobitexGetInOrder(symbol: NobCoinSymbol): Promise<number | false> {
+  let srcCurrency = symbol.toLowerCase();
   let dstCurrency: "rls" | "usdt";
   if (srcCurrency.endsWith("irt")) {
     srcCurrency = srcCurrency.slice(0, -3);
@@ -142,47 +142,24 @@ async function nobitexGetInOrder(symbol: NobCoinSymbol) {
     url: "/market/orders/list",
     params: {
       srcCurrency,
-      dstCurrency
+      dstCurrency,
     }
   }
 
   try {
-    const reponse = await nobInstance(axiosConfig);
-/*     Example= reponse.data : 
-    {
-      "status": "ok",
-      "orders": [
-          {
-              "type": "buy",
-              "execution": "Limit",
-              "tradeType": "Spot",
-              "srcCurrency": "Dogecoin",
-              "dstCurrency": "﷼",
-              "price": "143210",
-              "amount": "12",
-              "totalPrice": "1718520",
-              "totalOrderPrice": "1718520",
-              "matchedAmount": "0",
-              "unmatchedAmount": "12",
-              "clientOrderId": null,
-              "isMyOrder": false
-          }
-      ],
-      "hasNext": false
-  } */
-    if (reponse.data.orders.length == 0) {
-      return 0
+    const response: AxiosResponse<NobitexGetInOrderResponse> = await nobInstance(axiosConfig);
+    if (response.data.orders.length == 0) {
+      return 0;
     } else {
-      // console.log("inOrderNobitex " + symbol + JSON.stringify(reponse.data.orders));
-      //{type:buy, execution:Limit, tradeType:Spot, srcCurrency:Dogecoin, dstCurrency:...amount:...}
-      console.log("inOrderNobitex " + symbol + reponse.data.orders[0]["amount"]);
-      return false
+      console.log("inOrderNobitex " + symbol + response.data.orders[0]["amount"]);
+      return false;
     }
   } catch (error) {
-    console.log("🚀 ~ file: nobserver.js:90 ~ getInOrderNob ~ error:", error.message)
-    throw error
+    console.log("🚀 ~ file: nobserver.js:90 ~ getInOrderNob ~ error:", error.message);
+    throw error;
   }
 }
+
 // Example usage:
 // console.log(formatToSixDigitsMath(8570002)); // Output: "8570002"
 // console.log(formatToSixDigitsMath(123.456789)); // Output: "123.456"
