@@ -70,7 +70,27 @@ export interface NobitexGetInOrderResponse {
   }[];
   hasNext: boolean;
 }
-
+/* example interface NobitexGetInOrderResponse {
+  "status": "ok",
+  "orders": [
+      {
+          "type": "buy",
+          "execution": "Limit",
+          "tradeType": "Spot",
+          "srcCurrency": "Bitcoin",
+          "dstCurrency": "﷼",
+          "price": "70200000000",
+          "amount": "0.000024",
+          "totalPrice": "1684800",
+          "totalOrderPrice": "1684800",
+          "matchedAmount": "0",
+          "unmatchedAmount": "0.000024",
+          "clientOrderId": null,
+          "isMyOrder": false
+      }
+  ],
+  "hasNext": false
+} */
 // if details = 2 => export interface NobitexGetInOrderResponse {
 //   status: string;
 //   orders: {

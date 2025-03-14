@@ -1,8 +1,7 @@
 import { EventEmitter } from "stream";
 import symbols from "../symbols/symbols";
-import { httpGetCoinexOrderBooks } from "./exchanges/coinserver";
-import { httpGetNobOrderBooks } from "./exchanges/nobserver";
 import { OrderBook, RowInfo, AllOrderBooks, RowData } from "./types";
+import { getAllOrderBooks } from "./exController";
 
 const eventEmmiter = new EventEmitter();
 
@@ -35,15 +34,6 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
     }
     eventEmmiter.emit("diff", JSON.stringify(rowsInfo));
   }, 5000);
-}
-
-async function getAllOrderBooks(): Promise<AllOrderBooks[]> {
-  const coinOrderBooksPromise = httpGetCoinexOrderBooks();
-  const nobOrderBooksPromise = httpGetNobOrderBooks("all");
-
-  const promisesArray = [coinOrderBooksPromise, nobOrderBooksPromise];
-  const allOrderBooks = await Promise.allSettled(promisesArray);
-  return allOrderBooks as AllOrderBooks[];
 }
 
 function percentDiff(

@@ -160,6 +160,30 @@ async function nobitexGetInOrder(symbol: NobCoinSymbol): Promise<number | false>
   }
 }
 
+async function getCurrencyBalanceNob(symbol : string) {
+  let currency = symbol.toLowerCase();
+  if (currency.endsWith("irt")) {
+    currency = "rls";
+  } else if (currency.endsWith("usdt")) {
+    currency = "usdt";
+  }
+  // const currency = symbol == "IRT" ? "rls" : symbol.slice(0, - 3).toLowerCase();
+  const axiosConfig = {
+    method: "post",
+    url: "/users/wallets/balance",
+    data: {
+      currency
+    }
+  };
+  try {
+    const response = await nobInstance(axiosConfig);
+    return Number(response.data.balance);
+  } catch (error) {
+    console.log("🚀 ~ file: nobserver.js:113 ~ getCurrencyBalanceNob ~ error:", error.message)
+    throw error
+  }
+}
+
 // Example usage:
 // console.log(formatToSixDigitsMath(8570002)); // Output: "8570002"
 // console.log(formatToSixDigitsMath(123.456789)); // Output: "123.456"
