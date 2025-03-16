@@ -1,3 +1,5 @@
+import { NobCoinSymbol } from "symbols/symbols";
+
 export interface OrderBook {
   ask: string[];
   bid: string[];
@@ -20,4 +22,18 @@ export interface RowInfo {
 export interface AllOrderBooks {
   status: string;
   value: { [key: string]: OrderBook };
+}
+
+export interface NobitexBuyHandlerParams {
+  nobBuyRls: number;
+  symbol: NobCoinSymbol;
+  amount: number;
+  amountRls: number;
+  percent: number;
+}
+
+export interface NobitexBuyHandlerResponse {
+  success: boolean;
+  message: string;
+  data?: any;
 }

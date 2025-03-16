@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import symbols, { NobCoinSymbol } from '../../symbols/symbols';
-import { OrderBookNobitex, ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooks, SortedOrderBooksNobitex, NobitexGetInOrderResponse } from '../extypes/types';
+import { ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooksNobitex, NobitexGetInOrderResponse } from './types';
 import { writeFile } from 'node:fs';
 
 const nobToken = process.env.NOBTOKEN
@@ -160,7 +160,7 @@ async function nobitexGetInOrder(symbol: NobCoinSymbol): Promise<number | false>
   }
 }
 
-async function getCurrencyBalanceNob(symbol : string) {
+async function getCurrencyBalanceNob(symbol : NobCoinSymbol | "rls" | "usdt") {
   let currency = symbol.toLowerCase();
   if (currency.endsWith("irt")) {
     currency = "rls";
@@ -205,7 +205,12 @@ async function getCurrencyBalanceNob(symbol : string) {
 //   }
 //   return allOrderBooks;
 // }
-export { httpGetNobOrderBooks };
+export { 
+  httpGetNobOrderBooks,
+  nobitexTrade,
+  nobitexGetInOrder,
+  getCurrencyBalanceNob,
+ };
 // exports = {
 //   httpGetNobOrderBooks,
 // };
