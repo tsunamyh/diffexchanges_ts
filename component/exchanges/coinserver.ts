@@ -6,7 +6,7 @@ import {
   OrderBook,
   ResponseData,
   SortedOrderBooks,
-} from "./types";
+} from "./extypes";
 import { writeFile } from "fs/promises";
 
 const agent = new HttpsProxyAgent("http://127.0.0.1:10808");

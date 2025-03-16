@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import symbols, { NobCoinSymbol } from '../../symbols/symbols';
-import { ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooksNobitex, NobitexGetInOrderResponse } from './types';
+import { ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooksNobitex, NobitexGetInOrderResponse } from './extypes';
 import { writeFile } from 'node:fs';
 
 const nobToken = process.env.NOBTOKEN
