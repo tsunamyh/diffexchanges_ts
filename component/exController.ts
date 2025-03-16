@@ -63,14 +63,18 @@ async function NobitexBuyHandler(
       }).catch(function (error) {
         console.log("Tradeha Anjam Nashod yekish:(buyNobSellRam)", error.message);
       }).finally(async function () {
-        await getBalanceAndInOrder(symbol);
-        const obj = {
-          "date": new Date().toLocaleString(),
-          "buyNSellRCndtinArr": { nobInOrder },
-          nobBuyRls,
-          amount, newAmount, amountRls, percent
+        try {
+          await getBalanceAndInOrder(symbol);
+          const obj = {
+            "date": new Date().toLocaleString(),
+            "buyNSellRCndtinArr": { nobInOrder },
+            nobBuyRls,
+            amount, newAmount, amountRls, percent
+          }
+          console.log("🚀 ~ :69 bNsR ~ obj:", obj);
+        } catch (error) {
+          console.error("Error in finally block:", error.message);
         }
-        console.log("🚀 ~ :69 bNsR ~ obj:", obj)
       })
   }
 
