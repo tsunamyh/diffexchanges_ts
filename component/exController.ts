@@ -14,42 +14,48 @@ export async function getAllOrderBooks(): Promise<AllOrderBooks[]> {
 let nobInOrder, nobBalanceRls
 let condition
 let tradeTime = 0
-async function getBalanceAndInOrder(symbol) {
-  const promisesConditionArray = [
-    nobitexGetInOrder(symbol),
-    getCurrencyBalanceNob(symbol)
-  ];
-  const result = await Promise
-    .all(promisesConditionArray)
-    .catch(function (err) {
-      console.log("getBalanceAndInOrder:", err.message);
-      return null; // Return null to handle the error case
-    });
+async function getBalanceAndInOrder(symbol: string): Promise<{ nobBalanceRls: number; nobInOrder: boolean } | null> {
+  try {
+    const promisesConditionArray = [
+      nobitexGetInOrder(symbol),
+      getCurrencyBalanceNob(symbol)
+    ];
+    const result = await Promise.all(promisesConditionArray);
 
-  if (result) {
-    [
+    if (result) {
+      [
+        nobInOrder,
+        nobBalanceRls,
+      ] = result;
+    } else {
+      nobInOrder = false;
+      nobBalanceRls = 0;
+    }
+    condition = {
+      nobBalanceRls: Math.floor(nobBalanceRls),
       nobInOrder,
-      nobBalanceRls,
-    ] = result;
-  } else {
-    nobInOrder = false;
-    nobBalanceRls = 0;
+    };
+    console.log("condition:", condition);
+    return condition;
+  } catch (err) {
+    console.error("Error in getBalanceAndInOrder:", err.message);
+    return null; // Return null to handle the error case
   }
-  condition = {
-    nobBalanceRls: Math.floor(nobBalanceRls),
-    nobInOrder,
-  }
-  console.log("condition:", condition)
-  return condition
 }
 
-async function NobitexBuyHandler(nobBuyRls, symbol, amount, amountRls, percent) {
-  console.log("buyNobSellRamHandlerRamsell");
-  const buyInNobitex = new Date()
-  let diffTime = buyInNobitex.getTime() - tradeTime
+async function NobitexBuyHandler(
+  nobBuyRls: number, 
+  symbol: string, 
+  amount: number, 
+  amountRls: number, 
+  percent: number
+): Promise<void> {
+  console.log("buyNobNobitexBuyHandler");
+  const buyInNobitexTime = new Date()
+  let diffTime = buyInNobitexTime.getTime() - tradeTime
   const newAmount = bNsRFindAmount();
   if (diffTime > 6000) {
-    tradeTime = buyInNobitex.getTime()
+    tradeTime = buyInNobitexTime.getTime()
 
     nobitexTrade("buy", symbol, newAmount, nobBuyRls)
       .then(function (params) {

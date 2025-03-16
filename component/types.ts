@@ -31,9 +31,3 @@ export interface NobitexBuyHandlerParams {
   amountRls: number;
   percent: number;
 }
-
-export interface NobitexBuyHandlerResponse {
-  success: boolean;
-  message: string;
-  data?: any;
-}
