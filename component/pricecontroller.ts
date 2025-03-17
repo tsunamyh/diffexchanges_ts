@@ -4,25 +4,23 @@ import { OrderBook, RowInfo, AllOrderBooks, RowData } from "./types";
 import { getAllOrderBooks } from "./exController";
 
 const eventEmmiter = new EventEmitter();
-
 eventEmmiter.setMaxListeners(6);
 let intervalStatus = true
 
 let maxDiff = [
   { percent: 0 }
 ];
-intervalFunc();
+const myPercent = process.env.MYPERCENT || 1
 
 async function intervalFunc(): Promise<NodeJS.Timeout> {
   return setInterval(async function () {
     const [coinOrderBooks, nobOrderBooks] = await getAllOrderBooks();
     const rowsInfo: RowInfo[] = [];
-    if (
-      coinOrderBooks.status === "fulfilled" &&
-      nobOrderBooks.status === "fulfilled"
-    ) {
+    let maxDiffObj = {};
+    if (coinOrderBooks.status === "fulfilled" && nobOrderBooks.status === "fulfilled") {
+
       symbols.nobCoin.forEach(function (symbol: [string, string]) {
-        const rowInfo = percentDiff(
+        const rowInfo = getRowTableAndTrade(
           nobOrderBooks.value[symbol[0]],
           coinOrderBooks.value[symbol[1]],
           symbol
@@ -32,8 +30,46 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
         }
       });
     }
+    //   symbols.nobCoin.forEach(function (symbol: [string, string]) {
+    //     const rowInfo = percentDiff(
+    //       nobOrderBooks.value[symbol[0]],
+    //       coinOrderBooks.value[symbol[1]],
+    //       symbol
+    //     );
+    //     if (rowInfo) {
+    //       rowsInfo.push(rowInfo);
+    //     }
+    //   });
+    // }
     eventEmmiter.emit("diff", JSON.stringify(rowsInfo));
   }, 5000);
+}
+
+function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook, symbol: [string, string]): RowInfo | false {
+  if (exsistAskBid(nobOrderSymbol, coinOrderSymbol)) {
+    const nobBuyRls = nobOrderSymbol["bids"][0];
+    const ramSellRls = coinOrderSymbol["asks"][0];
+    const ramBuyRls = coinOrderSymbol["bids"][0];
+    const nobSellRls = nobOrderSymbol["asks"][0];
+    if (buySmallerSell(nobBuyRls, ramSellRls)) {
+
+    }
+
+    return false
+  }
+}
+
+function exsistAskBid(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook): boolean {
+  return (
+    nobOrderSymbol["bids"]?.length == 2 &&
+    nobOrderSymbol["asks"]?.length == 2 &&
+    coinOrderSymbol["bids"]?.length == 2 &&
+    coinOrderSymbol["asks"]?.length == 2
+  );
+}
+
+function buySmallerSell(buy: any, sell: any) {
+  return buy < sell;
 }
 
 function percentDiff(
