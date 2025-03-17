@@ -14,21 +14,41 @@ const myPercent = process.env.MYPERCENT || 1
 
 async function intervalFunc(): Promise<NodeJS.Timeout> {
   return setInterval(async function () {
-    const [coinOrderBooks, nobOrderBooks] = await getAllOrderBooks();
-    const rowsInfo: RowInfo[] = [];
-    let maxDiffObj = {};
-    if (coinOrderBooks.status === "fulfilled" && nobOrderBooks.status === "fulfilled") {
-
-      symbols.nobCoin.forEach(function (symbol: [string, string]) {
-        const rowInfo = getRowTableAndTrade(
-          nobOrderBooks.value[symbol[0]],
-          coinOrderBooks.value[symbol[1]],
-          symbol
-        );
-        if (rowInfo) {
-          rowsInfo.push(rowInfo);
+    if(intervalStatus){
+      try {
+        const [coinOrderBooks, nobOrderBooks] = await getAllOrderBooks();
+        const rowsInfo: RowInfo[] = [];
+        let maxDiffObj = {};
+        if (coinOrderBooks.status === "fulfilled" && nobOrderBooks.status === "fulfilled") {
+          
+          symbols.nobCoin.forEach(function (symbol: [string, string]) {
+            const rowInfo = getRowTableAndTrade(
+              nobOrderBooks.value[symbol[0]],
+              coinOrderBooks.value[symbol[1]],
+              symbol
+            );
+            if (rowInfo !== false) {
+              maxDiff[maxDiff.length] = rowInfo[0].rowData;
+              maxDiff[maxDiff.length + 1] = rowInfo[1].rowData;
+              maxDiff.sort(function (a, b) {
+                return b.percent - a.percent;
+              });
+              maxDiff.pop();
+  
+              maxDiffObj = {
+                status: "maxDiff",
+                maxDiff,
+              };
+              rowsInfo.push(rowInfo);
+            }
+          });
         }
-      });
+        eventEmmiter.emit("maxDiff", JSON.stringify(maxDiffObj));
+        eventEmmiter.emit("diff", JSON.stringify(rowsInfo));
+        
+      } catch (error) {
+        console.log("orderBooks Gerefteh Nashod: ", error.message);
+      }
     }
     //   symbols.nobCoin.forEach(function (symbol: [string, string]) {
     //     const rowInfo = percentDiff(
@@ -41,18 +61,23 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
     //     }
     //   });
     // }
-    eventEmmiter.emit("diff", JSON.stringify(rowsInfo));
   }, 5000);
 }
 
 function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook, symbol: [string, string]): RowInfo | false {
   if (exsistAskBid(nobOrderSymbol, coinOrderSymbol)) {
-    const nobBuyRls = nobOrderSymbol["bids"][0];
-    const ramSellRls = coinOrderSymbol["asks"][0];
-    const ramBuyRls = coinOrderSymbol["bids"][0];
-    const nobSellRls = nobOrderSymbol["asks"][0];
-    if (buySmallerSell(nobBuyRls, ramSellRls)) {
+    const nobBuyRls = nobOrderSymbol["asks"][0];
+    const coinSellRls = coinOrderSymbol["bids"][0];
+    // const coinBuyRls = coinOrderSymbol["bids"][0];
+    // const nobSellRls = nobOrderSymbol["asks"][0];
+    if (buySmallerSell(nobBuyRls, coinSellRls)) {
+      const [percent, amount, amountRls] = calcPercentAndAmounts(nobOrderSymbol["asks"], coinOrderSymbol["bids"])
+      if (percent > +myPercent && amountRls > 3500000) {
+        setTimeout(async () => {
+          const [newNobOrderBooks, newRamOrderBooks] = await getAllOrderBooks();
 
+        },1000)
+      }
     }
 
     return false
@@ -70,6 +95,18 @@ function exsistAskBid(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook): bo
 
 function buySmallerSell(buy: any, sell: any) {
   return buy < sell;
+}
+
+function calcPercentAndAmounts(buyOrder, sellOrder) {
+  const percent = calcPercentDiff(buyOrder[0], sellOrder[0]);
+  const amount = buyOrder;
+  const amountRls = Math.floor(amount * buyOrder[0]);
+  return [percent, amount, amountRls]
+}
+
+function calcPercentDiff(a, b) {
+  const percent = ((b - a) / a) * 100;
+  return Math.floor(percent * 100) / 100;
 }
 
 function percentDiff(

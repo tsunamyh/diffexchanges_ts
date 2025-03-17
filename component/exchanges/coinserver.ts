@@ -19,13 +19,13 @@ const coinInstance = axios.create({
 });
 
 async function httpGetCoinexOrderBook(
-  symbol: [string, string]
+  pair: string
 ): Promise<{ [key: string]: OrderBook }> {
   const response: AxiosResponse<ResponseData> = await coinInstance.get(
     "/spot/depth",
     {
       params: {
-        market: symbol[1],
+        market: pair,
         limit: 5,
         interval: "0.01",
       },
@@ -61,11 +61,16 @@ function sortCoinexOrderBooks(data: MarketDataCoinex): {
   };
 }
 
-async function httpGetCoinexOrderBooks() {
-  const sortedCoinexOrderBooksPromise: Promise<{ [key: string]: OrderBook }>[] =
+async function httpGetCoinexOrderBooks(pair : string) {
+  let sortedCoinexOrderBooksPromise: Promise<{ [key: string]: OrderBook }>[]
+  if (pair) {
+    sortedCoinexOrderBooksPromise = [httpGetCoinexOrderBook(pair)];
+  } else {
+    const sortedCoinexOrderBooksPromise: Promise<{ [key: string]: OrderBook }>[] =
     symbols.nobCoin.map(async function (symbol: [string, string]) {
-      return httpGetCoinexOrderBook(symbol);
+      return httpGetCoinexOrderBook(symbol[1]);
     });
+  }
 
   const sortedCoinexOrderBooksArray = await Promise.allSettled(
     sortedCoinexOrderBooksPromise
