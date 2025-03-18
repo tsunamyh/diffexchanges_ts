@@ -16,12 +16,12 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
   return setInterval(async function () {
     if(intervalStatus){
       try {
-        const [coinOrderBooks, nobOrderBooks] = await getAllOrderBooks();
+        const [coinOrderBooks, nobOrderBooks] = await getAllOrderBooks("all");
         const rowsInfo: RowInfo[] = [];
         let maxDiffObj = {};
         if (coinOrderBooks.status === "fulfilled" && nobOrderBooks.status === "fulfilled") {
           
-          symbols.nobCoin.forEach(function (symbol: [string, string]) {
+          symbols.nobCoinIRT.forEach(function (symbol: [string, string]) {
             const rowInfo = getRowTableAndTrade(
               nobOrderBooks.value[symbol[0]],
               coinOrderBooks.value[symbol[1]],
@@ -74,7 +74,7 @@ function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBo
       const [percent, amount, amountRls] = calcPercentAndAmounts(nobOrderSymbol["asks"], coinOrderSymbol["bids"])
       if (percent > +myPercent && amountRls > 3500000) {
         setTimeout(async () => {
-          const [newNobOrderBooks, newRamOrderBooks] = await getAllOrderBooks();
+          const [newCoinOrderBooks, newNobOrderBooks] = await getAllOrderBooks(symbol);
 
         },1000)
       }

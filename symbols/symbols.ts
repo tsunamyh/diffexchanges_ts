@@ -1,10 +1,10 @@
 interface Coin {
   // coin: string[];
   ramzCoin: [number, string][];
-  nobCoin: [string, string][];
+  nobCoinIRT: [string, string][];
 }
 
-type NobCoinSymbol = typeof symbols.nobCoin[number][0] | typeof symbols.nobCoin[number][1];
+type NobCoinSymbol = typeof symbols.nobCoinIRT[number][0] | typeof symbols.nobCoinIRT[number][1];
 
 const symbols: Coin = {
   ramzCoin: [
@@ -141,7 +141,7 @@ const symbols: Coin = {
     [255, "AVAXUSDT"],
     [50, "PUNDIXUSDT"],
   ],
-  nobCoin: [
+  nobCoinIRT: [
     ["ZILIRT", "ZILUSDT"],
     ["ZECIRT", "ZECUSDT"],
     ["FLOWIRT", "FLOWUSDT"],

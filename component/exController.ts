@@ -1,10 +1,19 @@
 import { httpGetCoinexOrderBooks } from "./exchanges/coinserver";
+import { SortedOrderBooks } from "./exchanges/extypes";
+import { SortedOrderBookNobitex } from "./exchanges/extypes";
 import { getCurrencyBalanceNob, httpGetNobOrderBooks, nobitexGetInOrder, nobitexTrade } from "./exchanges/nobserver";
 import { AllOrderBooks } from "./types";
 
-export async function getAllOrderBooks(): Promise<AllOrderBooks[]> {
-  const coinOrderBooksPromise = httpGetCoinexOrderBooks();
-  const nobOrderBooksPromise = httpGetNobOrderBooks("all");
+export async function getAllOrderBooks(pair:"all"|[string,string]|string): Promise<AllOrderBooks[]> {
+  let coinOrderBooksPromise: Promise<SortedOrderBooks> 
+  let nobOrderBooksPromise: Promise<Record<string, SortedOrderBookNobitex>> 
+  if (Array.isArray(pair)) {
+    coinOrderBooksPromise = httpGetCoinexOrderBooks(pair[1]);
+    nobOrderBooksPromise = httpGetNobOrderBooks(pair[1]);   
+  } else {
+    coinOrderBooksPromise = httpGetCoinexOrderBooks(pair);
+    nobOrderBooksPromise = httpGetNobOrderBooks(pair);
+  }
 
   const promisesArray = [coinOrderBooksPromise, nobOrderBooksPromise];
   const allOrderBooks = await Promise.allSettled(promisesArray);

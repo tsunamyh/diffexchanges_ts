@@ -63,13 +63,13 @@ function sortCoinexOrderBooks(data: MarketDataCoinex): {
 
 async function httpGetCoinexOrderBooks(pair : string) {
   let sortedCoinexOrderBooksPromise: Promise<{ [key: string]: OrderBook }>[]
-  if (pair) {
-    sortedCoinexOrderBooksPromise = [httpGetCoinexOrderBook(pair)];
-  } else {
-    const sortedCoinexOrderBooksPromise: Promise<{ [key: string]: OrderBook }>[] =
-    symbols.nobCoin.map(async function (symbol: [string, string]) {
+  if (pair == "all") {
+    sortedCoinexOrderBooksPromise =
+    symbols.nobCoinIRT.map(async function (symbol: [string, string]) {
       return httpGetCoinexOrderBook(symbol[1]);
     });
+  } else {
+    sortedCoinexOrderBooksPromise = [httpGetCoinexOrderBook(pair)];
   }
 
   const sortedCoinexOrderBooksArray = await Promise.allSettled(

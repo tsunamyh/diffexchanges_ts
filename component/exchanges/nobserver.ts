@@ -6,7 +6,7 @@ import { writeFile } from 'node:fs';
 const nobToken = process.env.NOBTOKEN
 console.log("process.env.NOBTOKEN : ", nobToken);
 
-const nobCoinex = symbols.nobCoin;
+const nobCoinex = symbols.nobCoinIRT;
 
 const nobBaseUrl = "https://api.nobitex.ir/";
 
