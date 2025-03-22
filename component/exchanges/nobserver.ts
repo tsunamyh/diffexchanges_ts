@@ -94,7 +94,7 @@ function formatToSixDigitsMath(value: number): string {
   return (Math.floor(value * factor) / factor).toString();
 }
 
-async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount: number, price: number) {
+async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount: number, price: number|string) {
   console.log("symbolnobtrade:", symbol, price);
   let srcCurrency = symbol.toLowerCase();
   let dstCurrency: "rls" | "usdt";

@@ -15,39 +15,42 @@ const myPercent = process.env.MYPERCENT || 1
 
 async function intervalFunc(): Promise<NodeJS.Timeout> {
   return setInterval(async function () {
-    if(intervalStatus){
+    if (intervalStatus) {
       try {
         const [coinOrderBooks, nobOrderBooks] = await getAllOrderBooks("all");
         const rowsInfo: RowInfo[] = [];
         let maxDiffObj = {};
         if (coinOrderBooks.status === "fulfilled" && nobOrderBooks.status === "fulfilled") {
+          // console.log("coinOrderBooks:",nobOrderBooks);
           
           symbols.nobCoinIRT.forEach(async function (symbol: [string, string]) {
-              const rowInfo = await getRowTableAndTrade(
+            const rowInfo = await getRowTableAndTrade(
               nobOrderBooks.value[symbol[0]],
               coinOrderBooks.value[symbol[1]],
               symbol
             );
 
             if (rowInfo !== false) {
-              maxDiff[maxDiff.length] = rowInfo[0].rowData;
-              maxDiff[maxDiff.length + 1] = rowInfo[1].rowData;
-              maxDiff.sort(function (a, b) {
-                return b.percent - a.percent;
-              });
-              maxDiff.pop();
-  
-              maxDiffObj = {
-                status: "maxDiff",
-                maxDiff,
-              };
-              rowsInfo.push(rowInfo);
+
+              // maxDiff[maxDiff.length] = rowInfo[0].rowData;
+              // maxDiff[maxDiff.length + 1] = rowInfo[1].rowData;
+              // maxDiff.sort(function (a, b) {
+              //   return b.percent - a.percent;
+              // });
+              // maxDiff.pop();
+
+              // maxDiffObj = {
+              //   status: "maxDiff",
+              //   maxDiff,
+              // };
+              // rowsInfo.push(rowInfo[0]);
             }
+            // console.log("rowInfi:", rowInfo);
           });
         }
         eventEmmiter.emit("maxDiff", JSON.stringify(maxDiffObj));
         eventEmmiter.emit("diff", JSON.stringify(rowsInfo));
-        
+
       } catch (error) {
         console.log("orderBooks Gerefteh Nashod: ", error.message);
       }
@@ -66,25 +69,30 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
   }, 5000);
 }
 
-function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook, symbol: [string, string]){
+async function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook, symbol: [string, string]) {
   if (exsistAskBid(nobOrderSymbol, coinOrderSymbol)) {
-    const nobBuyRls = nobOrderSymbol["asks"][0];
-    const coinSellRls = coinOrderSymbol["bids"][0];
-    // const coinBuyRls = coinOrderSymbol["bids"][0];
-    // const nobSellRls = nobOrderSymbol["asks"][0];
+    //nobOrderSymbol["ask"] = [Tether,tomani,hajm]
+    const nobBuyRls = nobOrderSymbol.ask[0]; 
+    //coinOrderSymbol["bid"] = [Tether,hajm]
+    const coinSellRls = coinOrderSymbol.bid[0];
+    // console.log("nobBuyRls:",nobBuyRls);
+    // console.log("coinSellRls:",coinSellRls);
+    
+    // const coinBuyRls = coinOrderSymbol["bid"][0];
+    // const nobSellRls = nobOrderSymbol["ask"][0];
     if (buySmallerSell(nobBuyRls, coinSellRls)) {
-      const [percent, amount, amountRls] = calcPercentAndAmounts(nobOrderSymbol["asks"], coinOrderSymbol["bids"])
+      const [percent, amount, amountRls] = calcPercentAndAmounts(nobOrderSymbol["ask"], coinOrderSymbol["bid"])
       if (percent > +myPercent && amountRls > 3500000) {
         setTimeout(async () => {
           const [newCoinOrderBooks, newNobOrderBooks] = await getAllOrderBooks(symbol);
           if (newCoinOrderBooks.status == "fulfilled" && newNobOrderBooks.status == "fulfilled") {
             const [newPercent, newAmount, newAmountRls] = calcPercentAndAmounts(
-              newCoinOrderBooks.value[symbol[1]]["bids"],
-              newNobOrderBooks.value[symbol[0]]["asks"]
+              newCoinOrderBooks.value[symbol[1]].bid,
+              newNobOrderBooks.value[symbol[0]].ask
             )
             if (newPercent > myPercent && newAmountRls > 3500000) {
               intervalStatus = false
-              const newNobBuyRls = newNobOrderBooks.value[symbol[0]]["asks"][0];
+              const newNobBuyRls = newNobOrderBooks.value[symbol[0]].ask[0];
               nobitexTrade("buy",symbol[0],newAmount,newNobBuyRls)
               .finally(function () {
                 let interval = 0
@@ -106,23 +114,25 @@ function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBo
               })
             }
           }
-          
+
         },1000)
       }
-      
-      return createRowTable(nobOrderSymbol["asks"], coinSellRls, percent, amount, amountRls,symbol)
+
+      return [createRowTable(nobOrderSymbol["asks"], coinSellRls, percent, amount, amountRls, symbol)]
     }
-    
+
     return false
   }
 }
 
 function exsistAskBid(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook): boolean {
+  console.log("nobOrderSymbol:",nobOrderSymbol);
+  
   return (
-    nobOrderSymbol["bids"]?.length == 2 &&
-    nobOrderSymbol["asks"]?.length == 2 &&
-    coinOrderSymbol["bids"]?.length == 2 &&
-    coinOrderSymbol["asks"]?.length == 2
+    nobOrderSymbol.bid?.length == 3 &&
+    nobOrderSymbol.ask?.length == 3 &&
+    coinOrderSymbol.bid?.length == 2 &&
+    coinOrderSymbol.ask?.length == 2
   );
 }
 
@@ -132,6 +142,7 @@ function buySmallerSell(buy: any, sell: any) {
 
 function calcPercentAndAmounts(buyOrder, sellOrder) {
   const percent = calcPercentDiff(buyOrder[0], sellOrder[0]);
+  console.log("percwnt 135", percent);
   const amount = buyOrder;
   const amountRls = Math.floor(amount * buyOrder[0]);
   return [percent, amount, amountRls]
@@ -211,7 +222,7 @@ function percentDiff(
   }
 }
 
-function createRowTable(nobRlsAndTthr, coinTthr, percentDiff, amount, amountRls,symbol) {
+function createRowTable(nobRlsAndTthr, coinTthr, percentDiff, amount, amountRls, symbol) {
   const rowData: RowData = {
     symbol: symbol[0],
     percent: percentDiff,
@@ -220,6 +231,8 @@ function createRowTable(nobRlsAndTthr, coinTthr, percentDiff, amount, amountRls,
     value: Math.floor(Math.abs(coinTthr - nobRlsAndTthr[0])) / 10,
     description: `ارزی:${amount} | تومانی:${amountRls / 10}`,
   };
+  console.log("rowData:",rowData);
+  
   const statusbuy = nobRlsAndTthr[1] < coinTthr ? "nob" : "coin";
   return {
     statusbuy,
