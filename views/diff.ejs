@@ -1,33 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Diff Application</title>
+    <meta name="description" content="Tuts+ Chat Application" />
+    <link rel="stylesheet" href="/css/table.css" />
+    <link rel="stylesheet" href="/css/baltable.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="stylesheet" href="/css/diff.css" />
+    <script src="/wsclient.js"></script>
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <title>Diff Application</title>
-  <meta name="description" content="Tuts+ Chat Application" />
-  <link rel="stylesheet" href="/css/table.css" />
-  <link rel="stylesheet" href="/css/diff.css" />
-  <script src="/wsclient.js"></script>
-</head>
+  <body>
+    <div>
+      <h5></h5>
+      <h3 class="diffMax"></h3>
+      <h4></h4>
+    </div>
 
-<body>
-  <div>
-    <h5></h5>
-    <h4></h4>
-  </div>
+    <table id="exchange">
+      <tbody id="order">
+        <tr class="headers">
+          <th id="symbol">Symbol</th>
+          <th id="percent">درصد</th>
+          <th id="nob">boN</th>
+          <th id="coin">Coinex</th>
+          <th id="value">مقدار</th>
+          <th id="description">توضیحات</th>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <table id="balance">
+      <tbody id="balbody">
+        <tr class="balheaders">
+          <th id="nobcurr">boN curr</th>
+          <th id="nobrls">boN Tmn</th>
+          <th id="nobInOrder">boN InOrder</th>
+          <th id="date">تاریخ</th>
+        </tr>
+        <tr class="balstart">
+          <td id="nobcurr"><%= nobBalanceCurr %> curr</td>
+          <td id="nobrls"><%= nobBalanceRls /10 %> Tmn</td>
+          <td id="nobInOrder"><%= nobInOrder %></td>
+          <td id="date"><%= date %></td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <a href="https://messenger.iran.liara.run/" target="_blank"
+      ><h3 class="chatlink" style="color: #d83f45">
+        بیاتو پیامرسان سینا عزیزی
+      </h3>
+    </a>
 
-  <table id="exchange">
-    <tbody>
-      <tr class="headers">
-        <th id="symbol">Symbol</th>
-        <th id="percent">درصد</th>
-        <th id="nob">nobTether | nobToman</th>
-        <th id="coin">Coin</th>
-        <th id="value">مقدار</th>
-        <th id="description">توضیحات</th>
-      </tr>
-    </tbody>
-  </table>
-</body>
-
+    <footer class="info">
+      <p>
+        Sponsered & created by
+        <a href="https://github.com/tsunamyh/">Sina Azizi And Hojat Fathpour</a>
+      </p>
+      <p>
+        Service powered by
+        <a href="https://www.npmjs.com/package/websocket">WebSocket</a> &
+        <a href="https://www.npmjs.com/package/express">Express</a>
+      </p>
+      <p>
+        Messenger service :
+        <a href="https://messenger.iran.liara.run/">ChatBox</a>
+      </p>
+    </footer>
+  </body>
 </html>

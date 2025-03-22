@@ -23,7 +23,7 @@ export async function getAllOrderBooks(pair:"all"|[string,string]|string): Promi
 let nobInOrder, nobBalanceRls
 let condition
 let tradeTime = 0
-async function getBalanceAndInOrder(symbol: string): Promise<{ nobBalanceRls: number; nobInOrder: boolean } | null> {
+export async function getBalanceAndInOrder(symbol: string): Promise<{ nobBalanceRls: number; nobInOrder: boolean } | null> {
   try {
     const promisesConditionArray = [
       nobitexGetInOrder(symbol),
@@ -52,7 +52,7 @@ async function getBalanceAndInOrder(symbol: string): Promise<{ nobBalanceRls: nu
   }
 }
 
-async function NobitexBuyHandler(
+export async function NobitexBuyHandler(
   nobBuyRls: number, 
   symbol: string, 
   amount: number, 

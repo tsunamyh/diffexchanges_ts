@@ -111,7 +111,7 @@ async function getRowTableAndTrade(nobOrderSymbol, coinOrderSymbol, symbol) {
       };
     } else {
       if (buySmallerSell(ramBuyRls, nobSellRls)) {
-        const [percent, amount, amountRls] = calcPercentAmounts(coinOrderSymbol["bids"], nobOrderSymbol["asks"])
+        const [percent,  , amountRls] = calcPercentAmounts(coinOrderSymbol["bids"], nobOrderSymbol["asks"])
         if (percent > myPercent && amountRls > 3500000) {
           setTimeout(async () => {
             const [newNobOrderBooks, newRamOrderBooks] = await getAllOrderBooks();

@@ -1,6 +1,15 @@
 const HOST: string = location.href.replace(/^http/, "ws"); //'ws://localhost:port/diff'
 const ws: WebSocket = new WebSocket(HOST);
 
+export interface RowData {
+  symbol: string;
+  percent: number;
+  nob: [string, string];
+  coin: string;
+  value: number;
+  description: string;
+}
+
 interface RowInfo {
   statusbuy: string;
   rowData: { [key: string]: string };

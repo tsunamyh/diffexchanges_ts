@@ -1,7 +1,8 @@
 import { EventEmitter } from "stream";
 import symbols from "../symbols/symbols";
 import { OrderBook, RowInfo, AllOrderBooks, RowData } from "./types";
-import { getAllOrderBooks } from "./exController";
+import { getAllOrderBooks, getBalanceAndInOrder } from "./exController";
+import { nobitexTrade } from "./exchanges/nobserver";
 
 const eventEmmiter = new EventEmitter();
 eventEmmiter.setMaxListeners(6);
@@ -21,12 +22,13 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
         let maxDiffObj = {};
         if (coinOrderBooks.status === "fulfilled" && nobOrderBooks.status === "fulfilled") {
           
-          symbols.nobCoinIRT.forEach(function (symbol: [string, string]) {
-            const rowInfo = getRowTableAndTrade(
+          symbols.nobCoinIRT.forEach(async function (symbol: [string, string]) {
+              const rowInfo = await getRowTableAndTrade(
               nobOrderBooks.value[symbol[0]],
               coinOrderBooks.value[symbol[1]],
               symbol
             );
+
             if (rowInfo !== false) {
               maxDiff[maxDiff.length] = rowInfo[0].rowData;
               maxDiff[maxDiff.length + 1] = rowInfo[1].rowData;
@@ -64,7 +66,7 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
   }, 5000);
 }
 
-function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook, symbol: [string, string]): RowInfo | false {
+function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBook, symbol: [string, string]){
   if (exsistAskBid(nobOrderSymbol, coinOrderSymbol)) {
     const nobBuyRls = nobOrderSymbol["asks"][0];
     const coinSellRls = coinOrderSymbol["bids"][0];
@@ -75,11 +77,42 @@ function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: OrderBo
       if (percent > +myPercent && amountRls > 3500000) {
         setTimeout(async () => {
           const [newCoinOrderBooks, newNobOrderBooks] = await getAllOrderBooks(symbol);
-
+          if (newCoinOrderBooks.status == "fulfilled" && newNobOrderBooks.status == "fulfilled") {
+            const [newPercent, newAmount, newAmountRls] = calcPercentAndAmounts(
+              newCoinOrderBooks.value[symbol[1]]["bids"],
+              newNobOrderBooks.value[symbol[0]]["asks"]
+            )
+            if (newPercent > myPercent && newAmountRls > 3500000) {
+              intervalStatus = false
+              const newNobBuyRls = newNobOrderBooks.value[symbol[0]]["asks"][0];
+              nobitexTrade("buy",symbol[0],newAmount,newNobBuyRls)
+              .finally(function () {
+                let interval = 0
+                setTimeout(pauseOrStartInterval, interval);
+                async function pauseOrStartInterval() {
+                  interval = (interval == 0) ? 1000 : interval * 2
+                  try {
+                    if (checkCondition(await getBalanceAndInOrder(symbol[0]))) {
+                      intervalStatus = true
+                    } else {
+                      if (interval < 12 * 60 * 60 * 1000) {
+                        setTimeout(pauseOrStartInterval, interval)
+                      }
+                    }
+                  } catch (error) {
+                    console.log("intervalStat True nashod:", error.message);
+                  }
+                }
+              })
+            }
+          }
+          
         },1000)
       }
+      
+      return createRowTable(nobOrderSymbol["asks"], coinSellRls, percent, amount, amountRls,symbol)
     }
-
+    
     return false
   }
 }
@@ -107,6 +140,13 @@ function calcPercentAndAmounts(buyOrder, sellOrder) {
 function calcPercentDiff(a, b) {
   const percent = ((b - a) / a) * 100;
   return Math.floor(percent * 100) / 100;
+}
+
+function checkCondition(cond) {
+  return (
+    cond.nobBalanceRls > 1500000 &&
+    cond.nobInOrder == 0
+  )
 }
 
 function percentDiff(
@@ -169,6 +209,22 @@ function percentDiff(
     const minTmn = Math.floor((min * Number(nobOrderSymbol.ask[1])) / 10);
     return `ارزی:${min} | تومانی:${minTmn}`;
   }
+}
+
+function createRowTable(nobRlsAndTthr, coinTthr, percentDiff, amount, amountRls,symbol) {
+  const rowData: RowData = {
+    symbol: symbol[0],
+    percent: percentDiff,
+    nob: nobRlsAndTthr,
+    coin: coinTthr.toString(),
+    value: Math.floor(Math.abs(coinTthr - nobRlsAndTthr[0])) / 10,
+    description: `ارزی:${amount} | تومانی:${amountRls / 10}`,
+  };
+  const statusbuy = nobRlsAndTthr[1] < coinTthr ? "nob" : "coin";
+  return {
+    statusbuy,
+    rowData,
+  };
 }
 
 export { getAllOrderBooks, eventEmmiter, intervalFunc };
