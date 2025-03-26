@@ -48,7 +48,7 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
       } catch (error) {
         console.log("orderBooks Gerefteh Nashod: ", error.message);
       } finally {
-        console.log("rowInfi:", JSON.stringify(rowsInfo));
+        // console.log("rowInfi:", JSON.stringify(rowsInfo));
         // eventEmmiter.emit("maxDiff", JSON.stringify(maxDiffObj));
         eventEmmiter.emit("diff", JSON.stringify(rowsInfo));
       }
@@ -157,11 +157,17 @@ function calcPercentDiff(a, b) {
   return Math.floor(percent * 100) / 100;
 }
 
-function checkCondition(cond) {
+function checkCondition(cond: any): boolean {
+  if (!cond || typeof cond.nobBalanceRls === "undefined") {
+    console.error("nobBalanceRls is not defined in cond:", cond);
+    return false;
+  }
+  console.log("cond:",cond);
+  
   return (
     cond.nobBalanceRls > 1500000 &&
     cond.nobInOrder == 0
-  )
+  );
 }
 
 function percentDiff(
@@ -244,4 +250,4 @@ function createRowTable(nobRlsAndTthr, coinTthr, percentDiff, amount, amountRls,
   };
 }
 
-export { getAllOrderBooks, eventEmmiter, intervalFunc };
+export { getAllOrderBooks, eventEmmiter, intervalFunc , checkCondition };

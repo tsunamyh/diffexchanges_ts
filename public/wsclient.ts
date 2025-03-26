@@ -18,6 +18,7 @@ interface RowInfo {
 interface RowsInfo {
   status?: string;
   maxDiff?: { symbol: string; percent: string }[];
+  rowDataBal?: string;
   size?: number;
   forEach?: (callback: (rowInfo: RowInfo) => void) => void;
 }
@@ -28,11 +29,12 @@ ws.onopen = function (): void {
 
 ws.onmessage = function ({ data }: MessageEvent): void {
   const rowsInfo: RowsInfo = JSON.parse(data);
-  if (rowsInfo.status === "maxDiff") {
-    console.log(rowsInfo);
-    printMaxDiff(rowsInfo.maxDiff!);
+  if (rowsInfo.status == "maxDiff") {
+    printMaxDiff(rowsInfo.maxDiff)
   } else if (rowsInfo.size) {
     printClientSize(rowsInfo.size);
+  } else if (rowsInfo.status == "balance") {
+    printDataBal(rowsInfo.rowDataBal)
   } else {
     printData(rowsInfo);
   }
@@ -60,11 +62,11 @@ function printClientSize(size: number): void {
 }
 
 function printData(rowsInfo: RowsInfo): void {
-clearTable();
-  rowsInfo.forEach!(function (rowInfo: RowInfo) {
+  clearTable();
+  rowsInfo.forEach(function (rowInfo) {
     const statusbuy = rowInfo.statusbuy;
     const rowData = rowInfo.rowData;
-    const tBody = document.querySelector("tbody")!;
+    const tBody = document.querySelector("tbody#order");
     const tRow = document.createElement("tr");
     tRow.setAttribute("class", "row");
     tBody.appendChild(tRow);
@@ -72,15 +74,33 @@ clearTable();
     Object.keys(rowData).forEach(function (key) {
       const tCell = document.createElement("td");
       tRow.appendChild(tCell);
-      console.log("rowData[key]/::",rowData[key]);
-      
+
       tCell.innerText = rowData[key];
-      if (statusbuy === key) {
-        tCell.style.backgroundColor = "#8fff4e";
+      if (statusbuy == key) {
+        tCell.style.backgroundColor = "#8fff4e"
       }
     });
   });
   sortTable();
+}
+
+function printDataBal(rowDataBal) {
+  // clearTable();
+  // rowDataBal.forEach(function (rowDataBal) {
+  // const statusbuy = rowDataBal.statusbuy;
+  const tBody = document.querySelector("tbody#balance");
+  const tRow = document.createElement("tr");
+  tRow.setAttribute("class", "balRow");
+  tBody.appendChild(tRow);
+
+  Object.keys(rowDataBal).forEach(function (key) {
+    const tCell = document.createElement("td");
+    tRow.appendChild(tCell);
+
+    tCell.innerText = rowDataBal[key];
+  });
+  // });
+  // sortTable();
 }
 
 function clearTable(): void {

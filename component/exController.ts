@@ -23,7 +23,7 @@ export async function getAllOrderBooks(pair:"all"|[string,string]|string): Promi
 let nobInOrder, nobBalanceRls
 let condition
 let tradeTime = 0
-export async function getBalanceAndInOrder(symbol: string): Promise<{ nobBalanceRls: number; nobInOrder: boolean } | null> {
+async function getBalanceAndInOrder(symbol: string = "rls"): Promise<{ nobBalanceRls: number; nobInOrder: boolean } | null> {
   try {
     const promisesConditionArray = [
       nobitexGetInOrder(symbol),
@@ -52,7 +52,7 @@ export async function getBalanceAndInOrder(symbol: string): Promise<{ nobBalance
   }
 }
 
-export async function NobitexBuyHandler(
+async function NobitexBuyHandler(
   nobBuyRls: number, 
   symbol: string, 
   amount: number, 
@@ -91,4 +91,14 @@ export async function NobitexBuyHandler(
     const minAmount = Math.min((nobBalanceRls / nobBuyRls), amount) * 0.94
     return Math.floor(minAmount)
   }
+}
+
+function getCondition() {
+  return condition
+}
+export { 
+  getBalanceAndInOrder,
+  NobitexBuyHandler,
+  getCondition,
+  condition
 }

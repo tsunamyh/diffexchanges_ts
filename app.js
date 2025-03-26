@@ -1,5 +1,7 @@
 const express = require("express");
 const path = require("path");
+const { condition, getCondition } = require("./component/exController");
+
 
 const app = express()
 
@@ -16,7 +18,11 @@ app.get("/",function (req,res) {
 })
 
 app.get('/diff',function (req,res) {
-    return res.render("diff")
+    let cond = Object.assign( {
+        date: new Date().toLocaleString()
+    }, getCondition())
+    console.log("app.cond", getCondition(), cond);
+    return res.render("diff", cond)
 })
 
 app.get('*',(req,res)=>{
