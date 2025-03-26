@@ -60,7 +60,7 @@ function printClientSize(size: number): void {
 }
 
 function printData(rowsInfo: RowsInfo): void {
-  clearTable();
+clearTable();
   rowsInfo.forEach!(function (rowInfo: RowInfo) {
     const statusbuy = rowInfo.statusbuy;
     const rowData = rowInfo.rowData;
