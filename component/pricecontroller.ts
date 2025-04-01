@@ -239,8 +239,8 @@ function createRowTable(nobRlsAndTthr, coinTthr, percentDiff, amount, amountRls,
     percent: percentDiff,
     nob: nobRlsAndTthr,
     coin: coinTthr.toString(),
-    value: Math.floor(Math.abs(coinTthr - nobRlsAndTthr[0])) / 10,
-    description: `ارزی:${amount} | تومانی:${amountRls / 10}`,
+    value: Math.floor(Math.abs(coinTthr - nobRlsAndTthr[0])),
+    description: `Curr:${amount} | Toomani:${amountRls / 10}`,
   };
   // console.log("rowData:",rowData);
   
