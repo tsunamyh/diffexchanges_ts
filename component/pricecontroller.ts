@@ -148,8 +148,8 @@ function calcPercentAndAmounts(buyOrder, sellOrder) {
   
   const percent = calcPercentDiff(buyOrder[0], sellOrder[0]);
   // console.log("percwnt 135", percent);
-  const amount = buyOrder;
-  const amountRls = Math.floor(amount * buyOrder[0]);
+  const amount = buyOrder[2];
+  const amountRls = Math.floor(amount * buyOrder[1]);
   return [percent, amount, amountRls]
 }
 
@@ -229,7 +229,7 @@ function percentDiff(
   function maxBuyInNob(): string {
     const min = Math.min(Number(nobOrderSymbol.ask[2]), Number(coinOrderSymbol.bid[1]));
     const minTmn = Math.floor((min * Number(nobOrderSymbol.ask[1])) / 10);
-    return `ارزی:${min} | تومانی:${minTmn}`;
+    return `Currency:${min} | Toomani:${minTmn}`;
   }
 }
 

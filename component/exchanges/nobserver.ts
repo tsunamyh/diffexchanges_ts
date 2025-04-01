@@ -39,7 +39,7 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
       const ask = data[symbol[0]]?.asks[0];
       const bid = data[symbol[0]]?.bids[0];
       if (ask && bid) {
-        // [feeRiali,hajm,feettri]
+        // [feettri,feeRiali,hajm]
         // Example::
         /* {
           BTCIRT: {
@@ -51,10 +51,10 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
             bid: [ 2209.52791549903, '2050000000', '0.70537' ]
           },
         } */
-        if (symbol[0] === "SHIBIRT") {
-          ask[0] = ask[0] / 1000;
-          bid[0] = bid[0] / 1000;
-        }
+        // if (symbol[0] === "SHIBIRT") {
+        //   ask[0] = ask[0] / 1000;
+        //   bid[0] = bid[0] / 1000;
+        // }
         sortedOrderBooks[symbol[0]] = {
           ask: [formatToSixDigitsMath(ask[0] / ttrBid), ask[0].toString(), ask[1].toString()],
           bid: [formatToSixDigitsMath(bid[0] / ttrAsk), bid[0].toString(), bid[1].toString()],

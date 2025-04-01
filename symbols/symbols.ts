@@ -160,7 +160,7 @@ const symbols: Coin = {
     // ["BNXIRT", "BNXUSDT"],
     ["JSTIRT", "JSTUSDT"],
     ["RENDERIRT", "RENDERUSDT"],
-    ["SHIBIRT", "SHIBUSDT"],
+    // ["SHIBIRT", "SHIBUSDT"],
     ["MANAIRT", "MANAUSDT"],
     ["BNBIRT", "BNBUSDT"],
     ["GMTIRT", "GMTUSDT"],
