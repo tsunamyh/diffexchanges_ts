@@ -1,7 +1,7 @@
 const HOST: string = location.href.replace(/^http/, "ws"); //'ws://localhost:port/diff'
 const ws: WebSocket = new WebSocket(HOST);
 
-export interface RowData {
+interface RowData {
   symbol: string;
   percent: number;
   nob: [string, string];
@@ -28,7 +28,9 @@ ws.onopen = function (): void {
 };
 
 ws.onmessage = function ({ data }: MessageEvent): void {
+  console.log("rowsInfo:>",data);
   const rowsInfo: RowsInfo = JSON.parse(data);
+  
   if (rowsInfo.status == "maxDiff") {
     printMaxDiff(rowsInfo.maxDiff)
   } else if (rowsInfo.size) {

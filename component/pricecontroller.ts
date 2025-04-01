@@ -29,7 +29,8 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
             );
 
             if (rowInfo !== false) {
-
+              console.log("roeInfo:>",rowInfo);
+              
               // maxDiff[maxDiff.length] = rowInfo[0].rowData;
               // maxDiff[maxDiff.length + 1] = rowInfo[1].rowData;
               // maxDiff.sort(function (a, b) {
@@ -143,10 +144,10 @@ function buySmallerSell(buy: any, sell: any) {
 }
 
 function calcPercentAndAmounts(buyOrder, sellOrder) {
-  console.log(buyOrder[0], sellOrder[0]);
+  // console.log(buyOrder[0], sellOrder[0]);
   
   const percent = calcPercentDiff(buyOrder[0], sellOrder[0]);
-  console.log("percwnt 135", percent);
+  // console.log("percwnt 135", percent);
   const amount = buyOrder;
   const amountRls = Math.floor(amount * buyOrder[0]);
   return [percent, amount, amountRls]
