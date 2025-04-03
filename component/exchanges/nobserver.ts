@@ -39,25 +39,26 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
       const ask = data[symbol[0]]?.asks[0];
       const bid = data[symbol[0]]?.bids[0];
       if (ask && bid) {
-        // [feettri,feeRiali,hajm]
+        // [feettri,hajm,feeRiali]
         // Example::
         /* {
-          BTCIRT: {
-            ask: [ 84886.73301347709, '78732444870', '0.000173' ],
-            bid: [ 84857.88404828627, '78731144820', '0.00002' ]
-          },
-          ETHIRT: {
-            ask: [ 2211.32046361186, '2050999730', '0.02111' ],
-            bid: [ 2209.52791549903, '2050000000', '0.70537' ]
-          },
+            BTCIRT: {
+               ask: ["82254.7", "0.00088", "87189989980"],
+               bid: ["81883.7", "0.00009", "86850000010"],
+               },
+            ETHIRT: {
+               ask: ["1767.92", "0.01444", "1873999980"],
+               bid: ["1764.23", "0.27747", "1871234560"],
+              },
+           },
         } */
         // if (symbol[0] === "SHIBIRT") {
         //   ask[0] = ask[0] / 1000;
         //   bid[0] = bid[0] / 1000;
         // }
         sortedOrderBooks[symbol[0]] = {
-          ask: [formatToSixDigitsMath(ask[0] / ttrBid), ask[0].toString(), ask[1].toString()],
-          bid: [formatToSixDigitsMath(bid[0] / ttrAsk), bid[0].toString(), bid[1].toString()],
+          ask: [formatToSixDigitsMath(ask[0] / ttrBid), ask[1].toString(), ask[0].toString()], // تغییر ترتیب المنت‌ها
+          bid: [formatToSixDigitsMath(bid[0] / ttrAsk), bid[1].toString(), bid[0].toString()], // تغییر ترتیب المنت‌ها
         };
       }
     }
