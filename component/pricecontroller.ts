@@ -233,18 +233,18 @@ function percentDiff(
   }
 }
 
-function createRowTable(nobRlsAndTthr, coinTthr, percentDiff, amount, amountRls, symbol) {
+function createRowTable(nobAsk, coinTthr, percentDiff, amount, amountRls, symbol) {
   const rowData: RowData = {
     symbol: symbol[0],
     percent: percentDiff,
-    nob: [nobRlsAndTthr[0].toString()+"|",nobRlsAndTthr[1].toString()],
+    nob: [nobAsk[0].toString()+"|",(nobAsk[2]/10).toString()],
     coin: coinTthr.toString(),
-    value: Math.floor(Math.abs(coinTthr - nobRlsAndTthr[0])),
+    value: Math.floor(Math.abs(coinTthr - nobAsk[0])),
     description: `Curr:${amount} | Toomani:${amountRls / 10}`,
   };
   // console.log("rowData:",rowData);
   
-  const statusbuy = nobRlsAndTthr[1] < coinTthr ? "nob" : "coin";
+  const statusbuy = nobAsk[0] < coinTthr ? "nob" : "coin";
   return {
     statusbuy,
     rowData,
