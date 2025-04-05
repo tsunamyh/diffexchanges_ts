@@ -75,16 +75,16 @@ async function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: O
   
   if (exsistAskBidbool) {
     
-    //nobOrderSymbol["ask"] = [Tether,tomani,hajm]
-    const nobBuyRls = nobOrderSymbol.ask[0]; 
+    //nobOrderSymbol["ask"] = [Tether,hajm,riali]
+    const nobBuyTthr = nobOrderSymbol.ask[0]; 
     //coinOrderSymbol["bid"] = [Tether,hajm]
-    const coinSellRls = coinOrderSymbol.bid[0];
+    const coinSellTthr = coinOrderSymbol.bid[0];
     // console.log("nobBuyRls:",nobBuyRls);
     // console.log("coinSellRls:",coinSellRls);
     
     // const coinBuyRls = coinOrderSymbol["bid"][0];
     // const nobSellRls = nobOrderSymbol["ask"][0];
-    if (buySmallerSell(nobBuyRls, coinSellRls)) {
+    if (buySmallerSell(nobBuyTthr, coinSellTthr)) {
       const [percent, amount, amountRls] = calcPercentAndAmounts(nobOrderSymbol["ask"], coinOrderSymbol["bid"])
       if (percent > +myPercent && amountRls > 3500000) {
         setTimeout(async () => {
@@ -122,7 +122,7 @@ async function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: O
         },1000)
       }
 
-      return [createRowTable(nobOrderSymbol["ask"], coinSellRls, percent, amount, amountRls, symbol)]
+      return [createRowTable(nobOrderSymbol.ask, coinSellTthr, percent, amount, amountRls, symbol)]
     }
 
     return false
@@ -148,8 +148,8 @@ function calcPercentAndAmounts(buyOrder, sellOrder) {
   
   const percent = calcPercentDiff(buyOrder[0], sellOrder[0]);
   // console.log("percwnt 135", percent);
-  const amount = buyOrder[2];
-  const amountRls = Math.floor(amount * buyOrder[1]);
+  const amount = buyOrder[1];
+  const amountRls = Math.floor(amount * buyOrder[2]);
   return [percent, amount, amountRls]
 }
 
@@ -237,7 +237,7 @@ function createRowTable(nobRlsAndTthr, coinTthr, percentDiff, amount, amountRls,
   const rowData: RowData = {
     symbol: symbol[0],
     percent: percentDiff,
-    nob: nobRlsAndTthr,
+    nob: [nobRlsAndTthr[0].toString()+"|",nobRlsAndTthr[1].toString()],
     coin: coinTthr.toString(),
     value: Math.floor(Math.abs(coinTthr - nobRlsAndTthr[0])),
     description: `Curr:${amount} | Toomani:${amountRls / 10}`,

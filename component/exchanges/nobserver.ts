@@ -41,7 +41,7 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
       if (ask && bid) {
         // [feettri,hajm,feeRiali]
         // Example::
-        /* {
+        /*{
             BTCIRT: {
                ask: ["82254.7", "0.00088", "87189989980"],
                bid: ["81883.7", "0.00009", "86850000010"],
@@ -50,8 +50,7 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
                ask: ["1767.92", "0.01444", "1873999980"],
                bid: ["1764.23", "0.27747", "1871234560"],
               },
-           },
-        } */
+          } */
         // if (symbol[0] === "SHIBIRT") {
         //   ask[0] = ask[0] / 1000;
         //   bid[0] = bid[0] / 1000;
