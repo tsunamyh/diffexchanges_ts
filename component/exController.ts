@@ -53,7 +53,7 @@ async function getBalanceAndInOrder(symbol: string = "rls"): Promise<{ nobBalanc
 }
 
 async function NobitexBuyHandler(
-  nobBuyRls: number, 
+  nobBuyRls: string, 
   symbol: string, 
   amount: number, 
   amountRls: number, 
@@ -62,7 +62,7 @@ async function NobitexBuyHandler(
   console.log("buyNobNobitexBuyHandler");
   const buyInNobitexTime = new Date()
   let diffTime = buyInNobitexTime.getTime() - tradeTime
-  const newAmount = bNsRFindAmount();
+  const newAmount = buyNobitexFindAmount(nobBuyRls,amount);
   if (diffTime > 6000) {
     tradeTime = buyInNobitexTime.getTime()
 
@@ -86,11 +86,11 @@ async function NobitexBuyHandler(
         }
       })
   }
+}
 
-  function bNsRFindAmount() {
-    const minAmount = Math.min((nobBalanceRls / nobBuyRls), amount) * 0.94
-    return Math.floor(minAmount)
-  }
+function buyNobitexFindAmount(nobBuyRls,amount) {
+  const minAmount = Math.min((nobBalanceRls / +nobBuyRls), amount) * 0.94
+  return Math.floor(minAmount)
 }
 
 function getCondition() {

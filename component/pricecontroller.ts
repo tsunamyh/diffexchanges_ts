@@ -1,8 +1,7 @@
 import { EventEmitter } from "stream";
 import symbols from "../symbols/symbols";
 import { OrderBook, RowInfo, AllOrderBooks, RowData } from "./types";
-import { getAllOrderBooks, getBalanceAndInOrder } from "./exController";
-import { nobitexTrade } from "./exchanges/nobserver";
+import { getAllOrderBooks, getBalanceAndInOrder, NobitexBuyHandler } from "./exController";
 
 const eventEmmiter = new EventEmitter();
 eventEmmiter.setMaxListeners(6);
@@ -97,7 +96,7 @@ async function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: O
             if (newPercent > myPercent && newAmountRls > 3500000) {
               intervalStatus = false
               const newNobBuyRls = newNobOrderBooks.value[symbol[0]].ask[0];
-              nobitexTrade("buy",symbol[0],newAmount,newNobBuyRls)
+              NobitexBuyHandler(newNobBuyRls,symbol[0],newAmount,newAmountRls,newPercent)
               .finally(function () {
                 let interval = 0
                 setTimeout(pauseOrStartInterval, interval);
