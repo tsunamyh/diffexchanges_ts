@@ -174,68 +174,6 @@ function checkCondition(cond: any): boolean {
   );
 }
 
-function percentDiff(
-  nobOrderSymbol: OrderBook,
-  coinOrderSymbol: OrderBook,
-  symbol: [string, string]
-): RowInfo | false {
-  if (nobOrderSymbol && coinOrderSymbol) {
-    if (nobAskIsSmallerCoinBid()) {
-      const rowData: RowData = {
-        symbol: symbol[0],
-        percent: calcPercentDiff(coinOrderSymbol.bid[0], nobOrderSymbol.ask[0]),
-        nob: [nobOrderSymbol.ask[0], (+nobOrderSymbol.ask[1] / 10).toString()],
-        coin: coinOrderSymbol.bid[0],
-        value:
-          Math.floor((Number(coinOrderSymbol.bid[0]) - Number(nobOrderSymbol.ask[0])) * 1000) /
-          1000,
-        description: maxBuyInNob(),
-      };
-      return {
-        statusbuy: "nob",
-        rowData,
-      };
-    }
-    if (coinAskIsSmallerNobBid()) {
-      const rowData: RowData = {
-        symbol: symbol[0],
-        percent: calcPercentDiff(nobOrderSymbol.bid[0], coinOrderSymbol.ask[0]),
-        nob: [nobOrderSymbol.bid[0], nobOrderSymbol.bid[1]],
-        coin: coinOrderSymbol.ask[0],
-        value:
-          Math.floor((Number(nobOrderSymbol.bid[0]) - Number(coinOrderSymbol.ask[0])) * 1000) /
-          1000,
-        description: "",
-      };
-      return {
-        statusbuy: "coin",
-        rowData,
-      };
-    }
-  }
-
-  return false;
-
-  function nobAskIsSmallerCoinBid(): boolean {
-    return +nobOrderSymbol.ask[0] < +coinOrderSymbol.bid[0];
-  }
-
-  function coinAskIsSmallerNobBid(): boolean {
-    return +coinOrderSymbol.ask[0] < +nobOrderSymbol.bid[0];
-  }
-
-  function calcPercentDiff(bid: string, ask: string): number {
-    const percent = ((Number(bid) - Number(ask)) / Number(ask)) * 100;
-    return Math.floor(percent * 100) / 100;
-  }
-
-  function maxBuyInNob(): string {
-    const min = Math.min(Number(nobOrderSymbol.ask[2]), Number(coinOrderSymbol.bid[1]));
-    const minTmn = Math.floor((min * Number(nobOrderSymbol.ask[1])) / 10);
-    return `Currency:${min} | Toomani:${minTmn}`;
-  }
-}
-
 function createRowTable(nobAsk, coinTthr, percentDiff, amount, amountRls, symbol) {
   const rowData: RowData = {
     symbol: symbol[0],
