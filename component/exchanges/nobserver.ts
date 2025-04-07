@@ -3,7 +3,7 @@ import symbols, { NobCoinSymbol } from '../../symbols/symbols';
 import { ResponseDataNobitex, SortedOrderBookNobitex, SortedOrderBooksNobitex, NobitexGetInOrderResponse } from './extypes';
 import { writeFile } from 'node:fs';
 
-const nobToken = process.env.NOBTOKENALI
+const nobToken = process.env.NOBTOKEN
 console.log("process.env.NOBTOKEN : ", nobToken);
 
 const nobCoinex = symbols.nobCoinIRT;

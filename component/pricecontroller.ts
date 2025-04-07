@@ -86,6 +86,7 @@ async function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: O
     if (buySmallerSell(nobBuyTthr, coinSellTthr)) {
       const [percent, amount, amountRls] = calcPercentAndAmounts(nobOrderSymbol["ask"], coinOrderSymbol["bid"])
       
+      console.log("asd:",percent,"|",myPercent);
       if (percent > +myPercent && amountRls > 3500000) {
         setTimeout(async () => {
           const [newCoinOrderBooks, newNobOrderBooks] = await getAllOrderBooks(symbol);
@@ -96,7 +97,6 @@ async function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: O
               newNobOrderBooks.value[symbol[0]].ask,
               newCoinOrderBooks.value[symbol[1]].bid
             )
-            console.log("asd:",percent,"|",myPercent);
             if (newPercent > myPercent && newAmountRls > 3500000) {
               intervalStatus = false
               const newNobBuyRls = newNobOrderBooks.value[symbol[0]].ask[2];
@@ -149,16 +149,18 @@ function buySmallerSell(buy: any, sell: any) {
 function calcPercentAndAmounts(buyOrder, sellOrder) {
   // console.log(buyOrder[0], sellOrder[0]);
   
-  const percent = calcPercentDiff(buyOrder[0], sellOrder[0]);
+  const percent = calculatePercentageDifference(buyOrder[0], sellOrder[0]);
   // console.log("percwnt 135", percent);
   const amount = buyOrder[1];
   const amountRls = Math.floor(amount * buyOrder[2]);
   return [percent, amount, amountRls]
 }
 
-function calcPercentDiff(a, b) {
-  const percent = ((Number(b) - Number(a)) / Number(a)) * 100;
-  return Math.floor(percent * 100) / 100;
+function calculatePercentageDifference(buyPrice: number, sellPrice: number): number {
+  const priceDifference = sellPrice - buyPrice;
+  const percentageDifference = (priceDifference / buyPrice) * 100;
+
+  return Number(percentageDifference.toFixed(2));
 }
 
 function checkCondition(cond: any): boolean {
