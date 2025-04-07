@@ -9,7 +9,7 @@ export async function getAllOrderBooks(pair:"all"|[string,string]|string): Promi
   let nobOrderBooksPromise: Promise<Record<string, SortedOrderBookNobitex>> 
   if (Array.isArray(pair)) {
     coinOrderBooksPromise = httpGetCoinexOrderBooks(pair[1]);
-    nobOrderBooksPromise = httpGetNobOrderBooks(pair[1]);   
+    nobOrderBooksPromise = httpGetNobOrderBooks(pair[0]);   
   } else {
     coinOrderBooksPromise = httpGetCoinexOrderBooks(pair);
     nobOrderBooksPromise = httpGetNobOrderBooks(pair);
@@ -90,7 +90,7 @@ async function NobitexBuyHandler(
 
 function buyNobitexFindAmount(nobBuyRls,amount) {
   const minAmount = Math.min((nobBalanceRls / +nobBuyRls), amount) * 0.94
-  return Math.floor(minAmount)
+  return minAmount
 }
 
 function getCondition() {

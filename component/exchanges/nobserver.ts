@@ -19,25 +19,55 @@ const nobInstance = axios.create({
 
 async function httpGetNobOrderBooks(symbol: string): Promise<Record<string, SortedOrderBookNobitex>> {
   // nobInstance.defaults.params = { symbol }
-  const response: AxiosResponse<ResponseDataNobitex> = await nobInstance.get(`/v3/orderbook/${symbol}`);
+  const response: AxiosResponse<ResponseDataNobitex> = await nobInstance.get(`/v3/orderbook/all`);
   // console.log("re", response.data);
 
-  const sortedOrderBooks = sortOrderBooks(response.data);
+  const sortedOrderBooks = sortOrderBooks(response.data, symbol);
   // writefileOrederbook(sortedOrderBooks)
   return sortedOrderBooks;
 }
 
-function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
+function sortOrderBooks(data: ResponseDataNobitex, specificSymbol: string): SortedOrderBooksNobitex {
   const ttrAsk = data["USDTIRT"].asks[0][0];
   const ttrBid = data["USDTIRT"].bids[0][0];
   const sortedOrderBooks: SortedOrderBooksNobitex = {};
-
-  nobCoinex.forEach(function (symbol) {
-    if (!(data[symbol[0]]?.asks === undefined || data[symbol[0]]?.bids.length === 0)) {
+  if (specificSymbol = "all") {
+    nobCoinex.forEach(function (symbol) {
+      if (!(data[symbol[0]]?.asks === undefined || data[symbol[0]]?.bids.length === 0)) {
+        // console.log("data[symbol[0]].bids[0]",symbol[0],data[symbol[0]]?.bids[0]);
+        // array exist or is not empty
+        const ask = data[symbol[0]]?.asks[0];
+        const bid = data[symbol[0]]?.bids[0];
+        if (ask && bid) {
+          // [feettri,hajm,feeRiali]
+          // Example::
+          /*{
+              BTCIRT: {
+                 ask: ["82254.7", "0.00088", "87189989980"],
+                 bid: ["81883.7", "0.00009", "86850000010"],
+                 },
+              ETHIRT: {
+                 ask: ["1767.92", "0.01444", "1873999980"],
+                 bid: ["1764.23", "0.27747", "1871234560"],
+                },
+            } */
+          // if (symbol[0] === "SHIBIRT") {
+          //   ask[0] = ask[0] / 1000;
+          //   bid[0] = bid[0] / 1000;
+          // }
+          sortedOrderBooks[symbol[0]] = {
+            ask: [formatToSixDigitsMath(ask[0] / ttrBid), ask[1].toString(), ask[0].toString()], // تغییر ترتیب المنت‌ها
+            bid: [formatToSixDigitsMath(bid[0] / ttrAsk), bid[1].toString(), bid[0].toString()], // تغییر ترتیب المنت‌ها
+          };
+        }
+      }
+    });   
+  } else {
+    if (!(data[specificSymbol]?.asks === undefined || data[specificSymbol]?.bids.length === 0)) {
       // console.log("data[symbol[0]].bids[0]",symbol[0],data[symbol[0]]?.bids[0]);
       // array exist or is not empty
-      const ask = data[symbol[0]]?.asks[0];
-      const bid = data[symbol[0]]?.bids[0];
+      const ask = data[specificSymbol]?.asks[0];
+      const bid = data[specificSymbol]?.bids[0];
       if (ask && bid) {
         // [feettri,hajm,feeRiali]
         // Example::
@@ -46,22 +76,14 @@ function sortOrderBooks(data: ResponseDataNobitex): SortedOrderBooksNobitex {
                ask: ["82254.7", "0.00088", "87189989980"],
                bid: ["81883.7", "0.00009", "86850000010"],
                },
-            ETHIRT: {
-               ask: ["1767.92", "0.01444", "1873999980"],
-               bid: ["1764.23", "0.27747", "1871234560"],
-              },
           } */
-        // if (symbol[0] === "SHIBIRT") {
-        //   ask[0] = ask[0] / 1000;
-        //   bid[0] = bid[0] / 1000;
-        // }
-        sortedOrderBooks[symbol[0]] = {
+        sortedOrderBooks[specificSymbol] = {
           ask: [formatToSixDigitsMath(ask[0] / ttrBid), ask[1].toString(), ask[0].toString()], // تغییر ترتیب المنت‌ها
           bid: [formatToSixDigitsMath(bid[0] / ttrAsk), bid[1].toString(), bid[0].toString()], // تغییر ترتیب المنت‌ها
         };
       }
     }
-  });
+  }
 
   return sortedOrderBooks;
 }
@@ -94,7 +116,7 @@ function formatToSixDigitsMath(value: number): string {
   return (Math.floor(value * factor) / factor).toString();
 }
 
-async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount: number, price: number|string) {
+async function nobitexTrade(type: "buy" | "sell", symbol: NobCoinSymbol, amount: number, price: number | string) {
   console.log("symbolnobtrade:", symbol, price);
   let srcCurrency = symbol.toLowerCase();
   let dstCurrency: "rls" | "usdt";
@@ -160,7 +182,7 @@ async function nobitexGetInOrder(symbol: NobCoinSymbol): Promise<number | false>
   }
 }
 
-async function getCurrencyBalanceNob(symbol : NobCoinSymbol | "rls" | "usdt") {
+async function getCurrencyBalanceNob(symbol: NobCoinSymbol | "rls" | "usdt") {
   let currency = symbol.toLowerCase();
   if (currency.endsWith("irt")) {
     currency = "rls";
@@ -205,12 +227,12 @@ async function getCurrencyBalanceNob(symbol : NobCoinSymbol | "rls" | "usdt") {
 //   }
 //   return allOrderBooks;
 // }
-export { 
+export {
   httpGetNobOrderBooks,
   nobitexTrade,
   nobitexGetInOrder,
   getCurrencyBalanceNob,
- };
+};
 // exports = {
 //   httpGetNobOrderBooks,
 // };
