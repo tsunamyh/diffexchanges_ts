@@ -7,9 +7,9 @@ const eventEmmiter = new EventEmitter();
 eventEmmiter.setMaxListeners(6);
 let intervalStatus = true
 
-let maxDiff = [
-  { percent: 0 }
-];
+// let maxDiff = [
+//   { percent: 0 }
+// ];
 const myPercent = process.env.MYPERCENT || 1
 
 async function intervalFunc(): Promise<NodeJS.Timeout> {
