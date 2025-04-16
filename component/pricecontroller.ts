@@ -29,7 +29,7 @@ async function intervalFunc(): Promise<NodeJS.Timeout> {
 
             if (rowInfo !== false) {
               // console.log("roeInfo:>",rowInfo);
-              
+
               // maxDiff[maxDiff.length] = rowInfo[0].rowData;
               // maxDiff[maxDiff.length + 1] = rowInfo[1].rowData;
               // maxDiff.sort(function (a, b) {
@@ -71,58 +71,42 @@ async function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: O
   // console.log(symbol," symbol:",nobOrderSymbol);
   const exsistAskBidbool = exsistAskBid(nobOrderSymbol, coinOrderSymbol)
   // console.log("exsistAskBidbool1:",exsistAskBidbool);
-  
+
   if (exsistAskBidbool) {
-    
+
     //nobOrderSymbol["ask"] = [Tether,hajm,riali]
-    const nobBuyTthr = nobOrderSymbol.ask[0]; 
+    const nobBuyTthr = nobOrderSymbol.ask[0];
     //coinOrderSymbol["bid"] = [Tether,hajm]
     const coinSellTthr = coinOrderSymbol.bid[0];
     // console.log("nobBuyRls:",nobBuyRls);
     // console.log("coinSellRls:",coinSellRls);
-    
+
     // const coinBuyRls = coinOrderSymbol["bid"][0];
     // const nobSellRls = nobOrderSymbol["ask"][0];
     if (buySmallerSell(nobBuyTthr, coinSellTthr)) {
       const [percent, amount, amountRls] = calcPercentAndAmounts(nobOrderSymbol["ask"], coinOrderSymbol["bid"])
-      
-      console.log("asd:",percent,"|",myPercent);
-      if (percent > +myPercent && amountRls > 3500000) {
-        setTimeout(async () => {
-          const [newCoinOrderBooks, newNobOrderBooks] = await getAllOrderBooks(symbol);
-          // console.log("bbbb:",newNobOrderBooks);
-          
-          if (newCoinOrderBooks.status == "fulfilled" && newNobOrderBooks.status == "fulfilled") {
-            const [newPercent, newAmount, newAmountRls] = calcPercentAndAmounts(
-              newNobOrderBooks.value[symbol[0]].ask,
-              newCoinOrderBooks.value[symbol[1]].bid
-            )
-            if (newPercent > myPercent && newAmountRls > 3500000) {
-              intervalStatus = false
-              const newNobBuyRls = newNobOrderBooks.value[symbol[0]].ask[2];
-              NobitexBuyHandler(newNobBuyRls,symbol[0],newAmount,newAmountRls,newPercent)
-              .finally(function () {
-                let interval = 0
-                setTimeout(pauseOrStartInterval, interval);
-                async function pauseOrStartInterval() {
-                  interval = (interval == 0) ? 1000 : interval * 2
-                  try {
-                    if (checkCondition(await getBalanceAndInOrder(symbol[0]))) {
-                      intervalStatus = true
-                    } else {
-                      if (interval < 12 * 60 * 60 * 1000) {
-                        setTimeout(pauseOrStartInterval, interval)
-                      }
-                    }
-                  } catch (error) {
-                    console.log("intervalStat True nashod:", error.message);
-                  }
-                }
-              })
-            }
-          }
 
-        },1000)
+      console.log("asd:", percent, "|", myPercent);
+      if (percent > +myPercent && amountRls > 3500000) {
+        const [newCoinOrderBooks, newNobOrderBooks] = await getAllOrderBooks(symbol);
+        // console.log("bbbb:",newNobOrderBooks);
+
+        if (newCoinOrderBooks.status == "fulfilled" && newNobOrderBooks.status == "fulfilled") {
+          const [newPercent, newAmount, newAmountRls] = calcPercentAndAmounts(
+            newNobOrderBooks.value[symbol[0]].ask,
+            newCoinOrderBooks.value[symbol[1]].bid
+          )
+          if (newPercent > myPercent && newAmountRls > 3500000) {
+            intervalStatus = false
+            const newNobBuyRls = newNobOrderBooks.value[symbol[0]].ask[2];
+            NobitexBuyHandler(newNobBuyRls, symbol[0], newAmount, newAmountRls, newPercent)
+              .finally(function () {
+                intervalStatus = true
+              })
+          }
+        }
+
+
       }
 
       return [createRowTable(nobOrderSymbol.ask, coinSellTthr, percent, amount, amountRls, symbol)]
@@ -148,7 +132,7 @@ function buySmallerSell(buy: any, sell: any) {
 
 function calcPercentAndAmounts(buyOrder, sellOrder) {
   // console.log(buyOrder[0], sellOrder[0]);
-  
+
   const percent = calculatePercentageDifference(buyOrder[0], sellOrder[0]);
   // console.log("percwnt 135", percent);
   const amount = buyOrder[1];
@@ -168,8 +152,8 @@ function checkCondition(cond: any): boolean {
     console.error("nobBalanceRls is not defined in cond:", cond);
     return false;
   }
-  console.log("cond:",cond);
-  
+  console.log("cond:", cond);
+
   return (
     cond.nobBalanceRls > 1500000 &&
     cond.nobInOrder == 0
@@ -180,13 +164,13 @@ function createRowTable(nobAsk, coinTthr, percentDiff, amount, amountRls, symbol
   const rowData: RowData = {
     symbol: symbol[0],
     percent: percentDiff,
-    nob: [nobAsk[0].toString()+"|",(nobAsk[2]/10).toString()],
+    nob: [nobAsk[0].toString() + "|", (nobAsk[2] / 10).toString()],
     coin: coinTthr.toString(),
     value: Math.floor(Math.abs(coinTthr - nobAsk[0])),
     description: `Curr:${amount} | Toomani:${amountRls / 10}`,
   };
   // console.log("rowData:",rowData);
-  
+
   const statusbuy = nobAsk[0] < coinTthr ? "nob" : "coin";
   return {
     statusbuy,
@@ -194,4 +178,4 @@ function createRowTable(nobAsk, coinTthr, percentDiff, amount, amountRls, symbol
   };
 }
 
-export { getAllOrderBooks, eventEmmiter, intervalFunc , checkCondition };
+export { getAllOrderBooks, eventEmmiter, intervalFunc, checkCondition };
