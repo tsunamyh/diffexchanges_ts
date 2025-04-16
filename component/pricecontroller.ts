@@ -105,8 +105,6 @@ async function getRowTableAndTrade(nobOrderSymbol: OrderBook, coinOrderSymbol: O
               })
           }
         }
-
-
       }
 
       return [createRowTable(nobOrderSymbol.ask, coinSellTthr, percent, amount, amountRls, symbol)]
