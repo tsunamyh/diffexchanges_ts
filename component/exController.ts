@@ -53,40 +53,85 @@ async function getBalanceAndInOrder(symbol: string = "rls"): Promise<{ nobBalanc
 }
 
 async function NobitexBuyHandler(
-  nobBuyRls: string, 
-  symbol: string, 
-  amount: number, 
-  amountRls: number, 
+  nobBuyRls: string,
+  symbol: string,
+  amount: number,
+  amountRls: number,
   percent: number
 ): Promise<void> {
-  console.log("buyNobNobitexBuyHandler");
-  const buyInNobitexTime = new Date()
-  let diffTime = buyInNobitexTime.getTime() - tradeTime
-  const newAmount = buyNobitexFindAmount(nobBuyRls,amount);
-  if (diffTime > 6000) {
-    tradeTime = buyInNobitexTime.getTime()
+  console.log("🛒 Starting Nobitex Buy Handler");
 
-    nobitexTrade("buy", symbol, newAmount, nobBuyRls)
-      .then(function (params) {
-        console.log("params::>", "Trade Done");
-      }).catch(function (error) {
-        console.log("Tradeha Anjam Nashod yekish:(buyNobSellRam)", error.message);
-      }).finally(async function () {
-        try {
-          await getBalanceAndInOrder(symbol);
-          const obj = {
-            "date": new Date().toLocaleString(),
-            "buyNSellRCndtinArr": { nobInOrder },
-            nobBuyRls,
-            amount, newAmount, amountRls, percent
-          }
-          console.log("🚀 ~ :69 bNsR ~ obj:", obj);
-        } catch (error) {
-          console.error("Error in finally block:", error.message);
-        }
-      })
+  const now = Date.now();
+  const diffTime = now - tradeTime;
+
+  if (diffTime <= 6000) {
+    console.log("⏱️ Buy skipped - less than 6 seconds since last trade");
+    return;
+  }
+
+  const newAmount = buyNobitexFindAmount(nobBuyRls, amount);
+  tradeTime = now;
+
+  try {
+    await nobitexTrade("buy", symbol, newAmount, nobBuyRls);
+    console.log("✅ Trade executed successfully");
+  } catch (error) {
+    console.error("❌ Trade failed (buyNobSellRam):", error.message);
+    return; // در صورت خطا در خرید، ادامه نده
+  }
+
+  try {
+    await getBalanceAndInOrder(symbol);
+    const logObj = {
+      date: new Date().toLocaleString(),
+      buyNSellRCndtinArr: { nobInOrder },
+      nobBuyRls,
+      amount,
+      newAmount,
+      amountRls,
+      percent,
+    };
+    console.log("📊 Trade Log:", logObj);
+  } catch (error) {
+    console.error("⚠️ Error in post-trade balance fetch:", error.message);
   }
 }
+
+// async function NobitexBuyHandler(
+//   nobBuyRls: string, 
+//   symbol: string, 
+//   amount: number, 
+//   amountRls: number, 
+//   percent: number
+// ): Promise<void> {
+//   console.log("buyNobNobitexBuyHandler");
+//   const buyInNobitexTime = new Date()
+//   let diffTime = buyInNobitexTime.getTime() - tradeTime
+//   const newAmount = buyNobitexFindAmount(nobBuyRls,amount);
+//   if (diffTime > 6000) {
+//     tradeTime = buyInNobitexTime.getTime()
+
+//     nobitexTrade("buy", symbol, newAmount, nobBuyRls)
+//       .then(function (params) {
+//         console.log("params::>", "Trade Done");
+//       }).catch(function (error) {
+//         console.log("Tradeha Anjam Nashod yekish:(buyNobSellRam)", error.message);
+//       }).finally(async function () {
+//         try {
+//           await getBalanceAndInOrder(symbol);
+//           const obj = {
+//             "date": new Date().toLocaleString(),
+//             "buyNSellRCndtinArr": { nobInOrder },
+//             nobBuyRls,
+//             amount, newAmount, amountRls, percent
+//           }
+//           console.log("🚀 ~ :69 bNsR ~ obj:", obj);
+//         } catch (error) {
+//           console.error("Error in finally block:", error.message);
+//         }
+//       })
+//   }
+// }
 
 function buyNobitexFindAmount(nobBuyRls,amount) {
   const minAmount = Math.min((nobBalanceRls / +nobBuyRls), amount) * 0.94
