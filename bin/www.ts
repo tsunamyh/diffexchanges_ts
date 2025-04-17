@@ -3,7 +3,7 @@ import { server } from "../server";
 import { checkCondition, intervalFunc } from '../component/pricecontroller';
 import { getBalanceAndInOrder } from '../component/exController';
 
-const port: number = 3000;
+const port: number = 3015;
 
 async function start() {
   server.listen(port, () => {
