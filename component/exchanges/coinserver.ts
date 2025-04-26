@@ -9,12 +9,9 @@ import {
 } from "./extypes";
 import { writeFile } from "fs/promises";
 
-const proxyUrl = process.env.PROXYURL 
-const proxyPort = process.env.PROXYPORT || "10808"
-const proxyUser = process.env.PROXYUSER || "root"
-const proxyPass = process.env.PROXYPASS || "12345"
+const proxyUrl = process.env.PROXYURL
 
-const agent = new HttpsProxyAgent('http://' + proxyUser + ':' + proxyPass + '@' + proxyUrl + ':' + proxyPort);
+const agent = new HttpsProxyAgent(proxyUrl)
 
 const coinBaseUrl: URL = new URL("https://api.coinex.com/v2/");
 
